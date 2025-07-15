@@ -1,0 +1,12 @@
+{
+    "home": {
+        "description": "Inspirado en las principales aplicaciones chinas, Eitri surgió a partir de la amplia experiencia de Calindra en el desarrollo de aplicaciones móviles, especialmente para el comercio electrónico. El objetivo era hacer este proceso más escalable, flexible, ágil, seguro y modular. Su nombre proviene del enano de la mitología nórdica que forjó Mjölnir y otros artefactos mágicos para los dioses, demostrando habilidades excepcionales como herrero y constructor. Esta conexión arquetípica con la mitología nórdica establece una analogía con el hecho de que construir aplicaciones con Eitri es tan rápido y práctico que parece magia.",
+        "title": "Este es tu nuevo Eitri-App",
+        "pageTitle": "Página Principal",
+        "button": "Ver Productos"
+    },
+    "productList": {
+        "pageTitle": "Lista de Productos",
+        "errorLogMessage": "Error al obtener datos"
+    }
+}

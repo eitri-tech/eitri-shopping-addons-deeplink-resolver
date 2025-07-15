@@ -1,0 +1,12 @@
+{
+    "home": {
+        "description": "Inspired by leading Chinese apps, Eitri emerged from Calindra's extensive experience in developing mobile applications, especially for e-commerce. The goal was to make this process more scalable, flexible, agile, secure, and modular. Its name is derived from the dwarf in Norse mythology who forged Mjölnir and other magical artifacts for the gods, showcasing exceptional skills as a blacksmith and builder. This archetypal connection to Norse mythology draws an analogy to how building applications with Eitri is so fast and practical that it feels like magic.",
+        "title": "This is your new Eitri-App",
+        "pageTitle": "Home Page",
+        "button": "View Products"
+    },
+    "productList": {
+        "pageTitle": "Product List",
+        "errorLogMessage": "Error fetching data"
+    }
+}
