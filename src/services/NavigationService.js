@@ -1,5 +1,6 @@
 import Eitri from 'eitri-bifrost'
 import { getProductBySlug } from './ProductService'
+
 /**
  * Abre o EitriApp de detalhe do produto
  * @param {(object)} product - produto inteiro.
@@ -216,6 +217,39 @@ export const openEitriApp = async (slug, params) => {
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
+		Eitri.close()
+	}
+}
+
+export const openRedirectLinkBrowser = async deeplink => {
+	try {
+		console.log('openRedirectLinkBrowser')
+		const { applicationData } = await Eitri.getConfigs()
+		let url =
+			applicationData.platform === 'ios'
+				? deeplink
+				: `https://faststore-cms.s3.us-east-1.amazonaws.com/redirect.html?link=${btoa(deeplink)}`
+
+		Eitri.openBrowser({
+			url: url,
+			inApp: false
+		})
+		Eitri.close()
+	} catch (error) {
+		console.error('Erro ao processar o deep link de busca', error)
+		Eitri.close()
+	}
+}
+
+export const openBrowser = async url => {
+	try {
+		Eitri.openBrowser({
+			url: url,
+			inApp: true
+		})
+		Eitri.close()
+	} catch (error) {
+		console.error('Erro ao processar o deep link de busca', error)
 		Eitri.close()
 	}
 }
