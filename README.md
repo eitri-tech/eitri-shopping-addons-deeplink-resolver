@@ -17,7 +17,8 @@ Para ativar o deeplink resolver com os comportamentos padrão, siga os seguintes
 1. Acesse o [Console Eitri](https://console.eitri.tech/) e vá em `Aplicativos`
 2. Selecione o aplicativo no qual deseja configurar o Deeplink Resolver e em seguida acesse `Seus ambientes`
 3. Clique em `Configurar` no ambiente desejado e procure a sessão `Configurações customizadas` para edita-las
-4. Ao clicar em `Editar configurações` você deve alterar com cuidado o JSON apresentado e incluir algumas informações em seu JSON e em seguida atualiza-lo.
+4. Ao clicar em `Editar configurações` você deve alterar com cuidado o JSON apresentado e incluir algumas informações em seu JSON e em seguida atualiza-lo incluindo as informações descritas nas proximas sessões (`deeplinkResolver` e, caso necessário, `deeplinks`).
+5. Solicite à equipe Eitri a ativação do Deeplink Resolver para o seu app (Não é necessário caso você crie [seu próprio deeplink resolver](#criando-seu-próprio-deeplink-resolver))
 
 > ATENÇÃO: Ao alterar as configurações remotas de um ambiente, esteja atento à sintaxe do JSON pois o efeito das alterações é imediato e você pode quebrar seu app caso formule mal o JSON.
 
