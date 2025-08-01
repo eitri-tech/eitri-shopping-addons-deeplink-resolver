@@ -126,8 +126,8 @@ export default function Home(props) {
 	}
 
 	return (
-		<Window>
-            <Text>Loading...</Text>
-		</Window>
+		<Page>
+            <Text>...</Text>
+		</Page>
 	)
 }
