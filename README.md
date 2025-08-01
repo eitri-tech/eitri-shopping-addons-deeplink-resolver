@@ -1,28 +1,31 @@
-# Eitri Deeplink Resolver
+# Eitri Shopping Addons
+Eitri Shopping Addons são uma maneira rápida de integrar provedores de serviços e novos recursos e funcionalidades em aplicativos Eitri. Você precisa apenas configurar seus Eitri-apps para utilizarem os add-ons selecionados.
+
+## Deeplink Resolver
 O Eitri Deeplink Resolver é um addon plug-n-play para aplicações do Eitri App Shopping.
 
 Com ele você pode dar ao seu app a capacidade de interpretar e direcionar para a página correta do app a grande maioria dos deeplinks padrão de e-commerce como deeplinks de páginas de categoria, produto, coleções, favoritos, minha conta e muito mais.
 
 Alem disso, você pode configurar regras e caminhos personalizados para seus deeplinks a partir da configuração remota de sua aplicação.
 
-Se preferir, você pode tambem criar uma cópia do Deeplink Resolver em sua aplicação para personalizar ainda mais os comportamentos usando nosso template.
+Se preferir você pode tambem criar uma cópia do Deeplink Resolver em sua aplicação para personalizar ainda mais os comportamentos usando nosso template.
 
-## Deeplinks suportados (Vtex)
+### Deeplinks suportados (Vtex)
 
 
-## Ativando o Deeplink Resolver padrão (Para Vtex)
+### Ativando o Deeplink Resolver padrão (Para Vtex)
 
 Para ativar o deeplink resolver com os comportamentos padrão, siga os seguintes passos:
 
 1. Acesse o [Console Eitri](https://console.eitri.tech/) e vá em `Aplicativos`
 2. Selecione o aplicativo no qual deseja configurar o Deeplink Resolver e em seguida acesse `Seus ambientes`
 3. Clique em `Configurar` no ambiente desejado e procure a sessão `Configurações customizadas` para edita-las
-4. Ao clicar em `Editar configurações` você deve alterar com cuidado o JSON apresentado e incluir algumas informações em seu JSON e em seguida atualiza-lo incluindo as informações descritas nas proximas sessões (`deeplinkResolver` e, caso necessário, `deeplinks`).
+4. Clique em `Editar configurações` e altere com cuidado o JSON apresentado para incluir as informações descritas nas proximas sessões (`deeplinkResolver` e, caso necessário, `deeplinks`).
 5. Solicite à equipe Eitri a ativação do Deeplink Resolver para o seu app (Não é necessário caso você crie [seu próprio deeplink resolver](#criando-seu-próprio-deeplink-resolver))
 
 > ATENÇÃO: Ao alterar as configurações remotas de um ambiente, esteja atento à sintaxe do JSON pois o efeito das alterações é imediato e você pode quebrar seu app caso formule mal o JSON.
 
-### deeplinkResolver
+#### deeplinkResolver
 
 Inclua em qualquer parte da raiz do JSON o `deeplinkResolver` com o slug de nosso Eitri-app para ativar o suporte ao processamento de deeplinks.
 
@@ -34,15 +37,15 @@ Esta entrada define qual será o Eitri-app responsável por processar seus deepl
     }
 ```
 
-## Personalizando deeplinks para seu app
+### Personalizando deeplinks para seu app
 
 Alem dos deeplinks padrão, você pode definir deeplinks customizados para seu App para expandir ainda mais as possibilidades de tratamento e abertura de páginas do seu aplicativo. Para isso inclua as informações em sua configuração de ambiente conforme descrito à seguir.
 
-### deeplinks
+#### deeplinks
 
 Inclua em qualquer parte da raiz do JSON o `deeplink` com `deeplinkMap` dentro dele. Em `deeplinkMap` você deve criar um array com um objeto para cada personalização de path que deseja receber e tratar.
 
-No objeto do path você deve incluir:
+Exemplo:
 
 ```json
 {
@@ -87,7 +90,7 @@ Onde:
 `slug`: é o slug do Eitri-app de seu app para qual deseja direcionar o usuário
 `params`: são os [parâmetros de inicialização](https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos) que deseja enviar ao Eitri-app quando ele for chamado 
 
-### Exemplo de configuração de ambiente
+#### Exemplo de configuração de ambiente
 
 ```json
 {
@@ -154,7 +157,7 @@ Onde:
 ```
 
 
-## Criando seu próprio Deeplink Resolver
+### Criando seu próprio Deeplink Resolver
 
 Caso as personalizações via configuração remota não atendam suas necessidades, é possível tambem criar seu próprio Eitri-app de tratamento de deeplinks.
 
