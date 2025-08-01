@@ -1,5 +1,5 @@
 # Eitri Shopping Addons
-Eitri Shopping Addons are a fast and easy way to integrate common provider resources into your Eitri applications. You just need to set your Eitri-Apps to use the selected addon wherever you need to use it.
+[Eitri Shopping Addons](https://github.com/eitri-tech/eitri-shopping-addons) are a fast and easy way to integrate common provider resources into your Eitri applications. You just need to set your Eitri-Apps to use the selected addon wherever you need to use it.
 
 ## Deeplink Resolver
 The Eitri Deeplink Resolver is a plug-n-play addon for Eitri App Shopping applications.
@@ -23,7 +23,8 @@ To enable the deeplink resolver with default behaviors, follow these steps:
 4. Click `Edit settings` and carefully modify the presented JSON and include the information described in the next sections (`deeplinkResolver` and, if necessary, `deeplinks`).
 5. Request the Eitri team to activate the Deeplink Resolver for your app (Not necessary if you create [your own deeplink resolver](#creating-your-own-deeplink-resolver))
 
-> ATTENTION: When changing the remote settings of an environment, pay attention to the JSON syntax as the effect of changes is immediate and you may break your app if the JSON is malformed.
+> [!IMPORTANT]
+> When changing the remote settings of an environment, pay attention to the JSON syntax as the effect of changes is immediate and you may break your app if the JSON is malformed.
 
 #### deeplinkResolver
 
@@ -164,6 +165,7 @@ To do this, use [`eitri create` with the `--template` parameter](https://docs.ei
 
 This way, instead of using our Eitri-app for deeplink handling, you can fully customize the behaviors and code of your Eitri-app to meet the most varied needs.
 
-After creation, you must include the **slug of your newly created Eitri-app** in the `deeplinkResolver` entry in your environment configuration [as previously described](#deeplinkresolver).
+> [!WARNING]
+> After creation, you must include the **slug of your newly created Eitri-app** in the `deeplinkResolver` entry in your environment configuration [as previously described](#deeplinkresolver).
 
 Using this strategy, whenever your app is opened from a deeplink, access will be directed to this Eitri-app, passing the information received in the deeplink as [initialization parameters]((https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos)) so you can handle it in the most appropriate way.
