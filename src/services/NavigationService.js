@@ -225,6 +225,9 @@ export const openRedirectLinkBrowser = async deeplink => {
 	try {
 		console.log('openRedirectLinkBrowser')
 		const { applicationData } = await Eitri.getConfigs()
+        let inApp = false
+
+        if (deeplink.startsWith('webview/inapp/')) { inApp = true }
 		let url =
 			applicationData.platform === 'ios'
 				? deeplink
@@ -232,7 +235,7 @@ export const openRedirectLinkBrowser = async deeplink => {
 
 		Eitri.openBrowser({
 			url: url,
-			inApp: false
+			inApp: inApp
 		})
 		Eitri.close()
 	} catch (error) {
