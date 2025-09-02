@@ -12,6 +12,7 @@ You can also create a copy of the Deeplink Resolver in your application to furth
 
 ### Supported Deeplinks (Vtex)
 
+To know more about supported deeplinks go to [our deeplink documentation](https://docs.eitri.tech/en/eitri-shopping/deeplinks/).
 
 ### Enabling the Default Deeplink Resolver (For Vtex)
 

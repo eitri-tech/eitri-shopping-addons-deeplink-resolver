@@ -11,7 +11,7 @@ Alem disso, você pode configurar regras e caminhos personalizados para seus dee
 Se preferir você pode tambem criar uma cópia do Deeplink Resolver em sua aplicação para personalizar ainda mais os comportamentos usando nosso template.
 
 ### Deeplinks suportados (Vtex)
-
+Para saber mais sobre os deeplinks suportados acesse nossa [documentação sobre deeplinks](https://docs.eitri.tech/pt/eitri-shopping/deeplinks/).
 
 ### Ativando o Deeplink Resolver padrão (Para Vtex)
 
