@@ -20,17 +20,9 @@ export const openProduct = async product => {
 
 export const openProductBySlug = async slug => {
 	try {
-		const result = await getProductBySlug(slug)
-
-		if (!result || result.length === 0) {
-			console.error('Nenhum produto encontrado para o deep link. Fechando app...')
-			Eitri.close()
-			return false
-		}
-
 		Eitri.navigation.open({
 			slug: 'pdp',
-			initParams: { product: result[0] },
+			initParams: { slug },
 			replace: true
 		})
 	} catch (e) {
