@@ -99,10 +99,10 @@ function isVersionGreater(localVersion, publishedVersion) {
 
 async function publishProject(project, directoryPath, sharedVersion = false, message = '') {
 	// Caminho absoluto para o diretório do projeto
-	const projectPath = path.resolve(directoryPath, `./`)
+	// const projectPath = path.resolve(directoryPath, `./`)
 
 	// Muda para o diretório do projeto
-	process.chdir(projectPath)
+	// process.chdir(projectPath)
 
 	// Executa o comando dentro do diretório do projeto
 	execSync(`eitri push-version -m '${message}' ${sharedVersion ? '--shared' : ''}`, { stdio: 'inherit' })
@@ -113,7 +113,7 @@ async function publishProject(project, directoryPath, sharedVersion = false, mes
 	}
 
 	// Volta para o diretório original (opcional)
-	process.chdir(directoryPath)
+	// process.chdir(directoryPath)
 }
 
 async function checkAndPushInDirectory(directoryPath, token) {
