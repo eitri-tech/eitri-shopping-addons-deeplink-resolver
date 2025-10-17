@@ -102,7 +102,6 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 			}
 		}
 
-		const domain = App?.configs?.providerInfo?.domain
 		if (!domain) return false
 
 		const path = deeplink.replace(new RegExp(`^${domain}\/?`), '')
