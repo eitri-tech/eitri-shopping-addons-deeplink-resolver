@@ -71,18 +71,8 @@ async function getPublishedVersions(eitriAppId, token) {
 	}
 }
 
-function getResolverConfig(directoryPath) {
+function getProjectConfig(directoryPath) {
 	const configPath = path.join(directoryPath, `./eitri-app.conf.js`)
-	if (!fs.existsSync(configPath)) {
-		throw new Error(`Arquivo de configuração não encontrado: ${configPath}`)
-	}
-	const { version, id, sharedVersion, messageVersion, versionMessage, sharedCompiler } = require(configPath)
-	const isShared = sharedVersion || sharedCompiler
-	return { version, id, sharedVersion: isShared, message: messageVersion || versionMessage }
-}
-
-function getProjectConfig(project, directoryPath) {
-	const configPath = path.join(directoryPath, `./${project}/eitri-app.conf.js`)
 	if (!fs.existsSync(configPath)) {
 		throw new Error(`Arquivo de configuração não encontrado: ${configPath}`)
 	}
@@ -131,16 +121,15 @@ async function checkAndPushInDirectory(directoryPath, token) {
 
 	try {
 		// const projects = listProjects(directoryPath)
+		const projects = ['eitri-shopping-addons-deeplink-resolver']
 		// console.log('Projetos encontrados:', projects)
 
-		// const updatedProjects = []
+		const updatedProjects = []
 
-		// for (const project of projects) {
+		for (const project of projects) {
 			try {
 				// console.log(`Verificando versões para o projeto: ${project}`)
-				// const appConfig = getProjectConfig(project, directoryPath)
-				const project = 'eitri-shopping-addons-deeplink-resolver'
-				const appConfig = getResolverConfig(directoryPath)
+				const appConfig = getProjectConfig(directoryPath)
 				const localVersion = appConfig.version
 				const publishedVersions = await getPublishedVersions(appConfig.id, token)
 
@@ -161,7 +150,7 @@ async function checkAndPushInDirectory(directoryPath, token) {
 			} catch (error) {
 				console.error(`${project} Erro ao processar o projeto:`, error.message)
 			}
-		// }
+		}
 
 		if (updatedProjects.length > 0) {
 			const orderedList = updatedProjects.sort((a, b) => (a.sharedVersion ? -1 : 1))
