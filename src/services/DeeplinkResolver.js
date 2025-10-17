@@ -118,7 +118,7 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 			value: category
 		}))
 		if (!facets) return false
-		openEitriApp('home', { facets, route: 'ProductCatalog' })
+		openEitriApp('home', { params: { facets }, route: 'ProductCatalog' })
 		return true
 	} catch (error) {
 		console.error('Erro ao processar o deep link de busca', error)

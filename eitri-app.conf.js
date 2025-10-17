@@ -4,7 +4,6 @@ module.exports = {
   "slug": "eitri-shopping-addons-deeplink-resolver",
   "eitri-luminus": "2.3.4",
   "eitri-bifrost": "3.10.0",
-  "eitri-commons": "2.1.2",
   "version": "0.1.3",
   "versionMessage": "Melhoria para redirect de categorias",
   "public-key": "d8c934ab-9883-4e20-b25d-0eb95d103aaa",
