@@ -99,7 +99,7 @@ function isVersionGreater(localVersion, publishedVersion) {
 
 async function publishProject(project, directoryPath, sharedVersion = false, message = '') {
 	// Caminho absoluto para o diretório do projeto
-	const projectPath = path.resolve(directoryPath, `./${project}`)
+	const projectPath = path.resolve(directoryPath, `./`)
 
 	// Muda para o diretório do projeto
 	process.chdir(projectPath)
