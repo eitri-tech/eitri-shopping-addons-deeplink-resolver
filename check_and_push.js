@@ -139,13 +139,14 @@ async function checkAndPushInDirectory(directoryPath, token) {
 			try {
 				// console.log(`Verificando versões para o projeto: ${project}`)
 				// const appConfig = getProjectConfig(project, directoryPath)
+				const project = 'eitri-shopping-addons-deeplink-resolver'
 				const appConfig = getResolverConfig(directoryPath)
 				const localVersion = appConfig.version
 				const publishedVersions = await getPublishedVersions(appConfig.id, token)
 
 				if (isVersionGreater(localVersion, publishedVersions)) {
 					console.log(
-						`Resolver: Versão local (${localVersion}) é maior que a publicada ${publishedVersions}.`
+						`${project}: Versão local (${localVersion}) é maior que a publicada ${publishedVersions}. Publicando ...`
 					)
 
 					updatedProjects.push({
