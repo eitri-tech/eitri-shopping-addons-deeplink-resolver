@@ -1,6 +1,7 @@
+import Eitri from 'eitri-bifrost'
 import { App } from 'eitri-shopping-vtex-shared'
 import { openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser } from './NavigationService'
-import Eitri from 'eitri-bifrost'
+import { delay } from './UtilService'
 
 const resolveDeeplinkRoot = deeplink => {
 	console.log('resolveDeeplinkRoot')
@@ -38,6 +39,9 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 	console.log('resolveDeeplinkToProductCatalog')
 	if (!deeplink) return false
 
+	deeplink = deeplink.replace(/^https?:\/\//, "")
+	const domain = App?.configs?.providerInfo?.domain?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
+
 	const [baseUrl, queryParams] = deeplink.split('?')
 	try {
 		if (deeplink?.includes('&map=') || deeplink?.includes('?map=')) {
@@ -55,10 +59,9 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 			})
 
 			if (mapValues.length > 0) {
-				const domain = App?.configs?.providerInfo?.domain
 				if (!domain) return false
 				const pathSegments = baseUrl
-					.replace(new RegExp(`^https?:\/\/${domain}\/?`), '')
+					.replace(new RegExp(`^${domain}\/?`), '')
 					.split('#')[0]
 					.split('/')
 
@@ -102,8 +105,8 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 		const domain = App?.configs?.providerInfo?.domain
 		if (!domain) return false
 
-		const path = deeplink.replace(new RegExp(`^https?:\/\/${domain}\/?`), '')
-
+		const path = deeplink.replace(new RegExp(`^${domain}\/?`), '')
+		
 		const [categoryPath] = path.split('?')
 		if (!categoryPath) return false
 
