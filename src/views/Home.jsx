@@ -64,7 +64,7 @@ export default function Home(props) {
 		try {
 			const { action, value, title, deeplink } = startParams
 			if (deeplink) {
-				if (deeplink.startsWith('http')) {
+				if (deeplink.startsWith('http') || deeplink.startsWith('www')) {
 					await resolveDeeplinkStartParams(deeplink)
 					return
 				} else {
