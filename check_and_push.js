@@ -105,7 +105,7 @@ async function publishProject(project, directoryPath, sharedVersion = false, mes
 	// process.chdir(projectPath)
 
 	// Executa o comando dentro do diretório do projeto
-	execSync(`eitri push-version -m '${message}' ${sharedVersion ? '--shared' : ''}`, { stdio: 'inherit' })
+	execSync(`eitri push-version -m '${message}'`, { stdio: 'inherit' })
 
 	// Publica versão em dev
 	if (DEV_ENV_ID) {
