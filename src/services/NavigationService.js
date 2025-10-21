@@ -225,10 +225,12 @@ export const openRedirectLinkBrowser = async deeplink => {
 				? deeplink
 				: `https://faststore-cms.s3.us-east-1.amazonaws.com/redirect.html?link=${btoa(deeplink)}`
 
-		Eitri.openBrowser({
-			url: url,
-			inApp: inApp
-		})
+		if (inApp) {
+			Eitri.openBrowser({
+				url: url,
+				inApp: inApp
+			})
+		}
 		Eitri.close()
 	} catch (error) {
 		console.error('Erro ao processar o deep link de busca', error)
