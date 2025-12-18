@@ -238,11 +238,15 @@ export const openRedirectLinkBrowser = async deeplink => {
 	}
 }
 
-export const openBrowser = async url => {
+export const openBrowser = async (url, inApp = true) => {
 	try {
+		// forçar sempre https
+		const formatedUrl = new URL(url.startsWith('http') ? url : `https://${url}`);
+    	formatedUrl.protocol = 'https:';
+		
 		Eitri.openBrowser({
-			url: url,
-			inApp: true
+			url: formatedUrl.toString(),
+			inApp
 		})
 		Eitri.close()
 	} catch (error) {
