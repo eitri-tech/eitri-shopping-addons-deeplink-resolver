@@ -5,9 +5,12 @@ import { delay } from './UtilService'
 
 const resolveDeeplinkRoot = deeplink => {
 	console.log('resolveDeeplinkRoot')
-	const domain = App?.configs?.providerInfo?.domain
+	const [baseUrl] = deeplink.split('?')
+	const baseDomain = App?.configs?.providerInfo?.domain || App?.configs?.providerInfo?.host
+	const domain = baseDomain?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
 	if (!domain) return false
-	const isRoot = new RegExp(`^https?:\/\/${domain}\/?$`).test(deeplink)
+
+	const isRoot = new RegExp(`^https?:\/\/${domain}\/?$`).test(baseUrl)
 	if (isRoot) {
 		openEitriApp('home')
 		return true
