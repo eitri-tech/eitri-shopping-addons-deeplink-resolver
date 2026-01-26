@@ -12,7 +12,7 @@ const resolveDeeplinkRoot = deeplink => {
 
 	const isRoot = new RegExp(`^https?:\/\/${domain}\/?$`).test(baseUrl)
 	if (isRoot) {
-		openEitriApp('home')
+		Eitri.close()
 		return true
 	}
 	return false
