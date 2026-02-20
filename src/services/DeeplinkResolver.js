@@ -174,10 +174,8 @@ export const resolveDeeplinkPath = async deeplink => {
 
 	try {
 		for (const way of deeplinkWays) {
-
 			try {
 				let result = await way(deeplink)
-				console.log('executando:', way.name, result)
 				if (result) {
 					return true
 				}
