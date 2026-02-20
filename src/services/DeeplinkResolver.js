@@ -39,7 +39,7 @@ const resolveDeeplinkToProduct = async deeplink => {
 	}
 }
 
-const resolveDeeplinkToProductCatalog = async deeplink => {
+const resolveDeeplinkToProductCatalog = deeplink => {
 	console.log('resolveDeeplinkToProductCatalog')
 	if (!deeplink) return false
 
@@ -48,7 +48,6 @@ const resolveDeeplinkToProductCatalog = async deeplink => {
 	const domain = host?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
 
 	const [baseUrl, queryParams] = deeplink.split('?')
-
 
 	try {
 		if (deeplink?.includes('&map=') || deeplink?.includes('?map=')) {
@@ -161,8 +160,6 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 }
 
 export const resolveDeeplinkPath = async deeplink => {
-
-
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
@@ -174,10 +171,8 @@ export const resolveDeeplinkPath = async deeplink => {
 
 	try {
 		for (const way of deeplinkWays) {
-
 			try {
 				let result = await way(deeplink)
-				console.log('executando:', way.name, result)
 				if (result) {
 					return true
 				}
