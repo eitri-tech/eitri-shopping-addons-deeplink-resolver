@@ -162,7 +162,6 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 
 export const resolveDeeplinkPath = async deeplink => {
 
-
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
