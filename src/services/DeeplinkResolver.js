@@ -11,6 +11,7 @@ const resolveDeeplinkRoot = deeplink => {
 	if (!domain) return false
 
 	const isRoot = new RegExp(`^https?:\/\/${domain}\/?$`).test(baseUrl)
+
 	if (isRoot) {
 		Eitri.exposedApis.appState.goHome()
 		return true
@@ -38,17 +39,21 @@ const resolveDeeplinkToProduct = async deeplink => {
 	}
 }
 
-const resolveDeeplinkToProductCatalog = deeplink => {
+const resolveDeeplinkToProductCatalog = async deeplink => {
 	console.log('resolveDeeplinkToProductCatalog')
 	if (!deeplink) return false
 
 	deeplink = deeplink.replace(/^https?:\/\//, "")
-	const domain = App?.configs?.providerInfo?.domain?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
+	const host = App?.configs?.providerInfo?.host || App?.configs?.providerInfo?.domain // domain is deprecated
+	const domain = host?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
 
 	const [baseUrl, queryParams] = deeplink.split('?')
+
+
 	try {
 		if (deeplink?.includes('&map=') || deeplink?.includes('?map=')) {
 			const paramsArray = queryParams.split('&')
+
 			const paramsObject = {}
 			let mapValues = []
 
@@ -156,6 +161,8 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 }
 
 export const resolveDeeplinkPath = async deeplink => {
+
+
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
@@ -167,8 +174,10 @@ export const resolveDeeplinkPath = async deeplink => {
 
 	try {
 		for (const way of deeplinkWays) {
+
 			try {
 				let result = await way(deeplink)
+				console.log('executando:', way.name, result)
 				if (result) {
 					return true
 				}
