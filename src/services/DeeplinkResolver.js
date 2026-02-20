@@ -39,7 +39,7 @@ const resolveDeeplinkToProduct = async deeplink => {
 	}
 }
 
-const resolveDeeplinkToProductCatalog = async deeplink => {
+const resolveDeeplinkToProductCatalog = deeplink => {
 	console.log('resolveDeeplinkToProductCatalog')
 	if (!deeplink) return false
 
