@@ -49,7 +49,6 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 
 	const [baseUrl, queryParams] = deeplink.split('?')
 
-
 	try {
 		if (deeplink?.includes('&map=') || deeplink?.includes('?map=')) {
 			const paramsArray = queryParams.split('&')
@@ -161,7 +160,6 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 }
 
 export const resolveDeeplinkPath = async deeplink => {
-
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
