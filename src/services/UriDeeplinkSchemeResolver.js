@@ -1,5 +1,5 @@
 import { getProductById, getProductBySlug } from './ProductService'
-import { openBrowser, openEitriApp, openProduct } from './NavigationService'
+import { openBrowser, openEitriApp, openProduct, openLandingPage } from './NavigationService'
 import Eitri from 'eitri-bifrost'
 import { resolveDeeplinkFromRemoteConfig } from './DeeplinkResolver'
 import { delay } from './UtilService'
@@ -72,6 +72,21 @@ const resolveCategory = async (deeplink, params) => {
 		filter: params
 	})
 	return true
+}
+
+const resolveLandingPage = async (deeplink, params) => {
+	try {
+		if (deeplink?.startsWith('landingpage')) {
+			const paramsObj = Object.fromEntries(new URLSearchParams(params))
+			let title = paramsObj?.title || ""
+			let lpname = paramsObj?.landingPageName
+			openLandingPage(title, lpname)
+			return true
+		}
+	} catch (error) {
+		console.error('Erro ao processar o deep link do produto', error)
+		return false
+	}
 }
 
 const resolveWebView = async (deeplink, params) => {
@@ -147,6 +162,7 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 		resolveCategory,
 		resolveWebView,
 		resolveSearch,
+		resolveLandingPage,
 		resolveGeneric
 	]
 

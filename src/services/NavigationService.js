@@ -78,6 +78,26 @@ export const openHome = async deeplink => {
 	}
 }
 
+/**
+ * Abre o EitriApp de home direcionando para Landing Page
+ */
+export const openLandingPage = async (title, lpname) => {
+	try {
+		Eitri.navigation.open({
+			slug: 'home',
+			initParams: {
+				route: 'LandingPage',
+				title: title,
+				landingPageName: lpname
+			},
+			replace: true
+		})
+	} catch (e) {
+		console.error('navigate to Home: Error', e)
+		Eitri.close()
+	}
+}
+
 export const openCheckout = async () => {
 	try {
 		Eitri.navigation.open({
