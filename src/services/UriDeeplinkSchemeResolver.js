@@ -84,10 +84,11 @@ const resolveCategory = async (deeplink, params) => {
 
 const resolveLandingPage = async (deeplink, params) => {
 	try {
-		if (deeplink?.startsWith('landingpage')) {
+		const _deeplink = deeplink?.split('/')?.[0]?.toLowerCase()?.replace(/[^a-zA-ZÀ-ÿ]/g, '')
+		if (_deeplink === 'landingpage') {
 			const paramsObj = Object.fromEntries(new URLSearchParams(params))
-			let title = paramsObj?.title || ""
-			let lpname = paramsObj?.landingPageName
+			const title = paramsObj?.title || ""
+			const lpname = deeplink?.split('/')?.[1]
 			openLandingPage(title, lpname)
 			return true
 		}
@@ -166,7 +167,6 @@ const resolveGeneric = async (deeplink, params) => {
 export const resolveUriDeeplinkScheme = async deeplink => {
 	const [, basePath] = deeplink.split('://')
 	const [path, queryParams] = basePath.split(/\?(.*)/).filter(Boolean)
-
 	const deeplinkWays = [
 		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkToProduct,
