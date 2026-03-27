@@ -1,6 +1,6 @@
 import Eitri from 'eitri-bifrost'
 import { App } from 'eitri-shopping-vtex-shared'
-import { closeEitriApp, openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser } from './NavigationService'
+import { closeEitriApp, openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser, openWebFlow } from './NavigationService'
 import { delay } from './UtilService'
 
 const resolveDeeplinkRoot = deeplink => {
@@ -151,7 +151,13 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 	const matchedDeeplink = rcDeeplinkConfig.deeplinkMap.find(dlinkMap => {
 		return dlinkMap.path.some(path => deeplink.indexOf(path) > -1)
 	})
+
 	if (matchedDeeplink) {
+		if (matchedDeeplink?.forceWeb) {
+			openWebFlow(matchedDeeplink?.forceWeb)
+			return true
+		}
+
 		openEitriApp(matchedDeeplink.slug, matchedDeeplink.params)
 		return true
 	} else {
