@@ -35,10 +35,14 @@ const resolveCollection = async (deeplink, params) => {
 	try {
 		if (deeplink?.startsWith('collection')) {
 			const paramsObj = Object.fromEntries(new URLSearchParams(params))
-			openEitriApp('home', {
+			const payload = {
 				facets: [{ key: 'productClusterIds', value: paramsObj?.filter || paramsObj?.filters }],
 				sort: paramsObj?.O || paramsObj?.order,
-				route: 'ProductCatalog'
+			}
+			openEitriApp('home', {
+				route: 'ProductCatalog',
+				...payload,
+				params: payload
 			})
 			return true
 		}
@@ -65,11 +69,15 @@ const resolveCategory = async (deeplink, params) => {
 	if (!facets) return false
 
 	const paramsObj = Object.fromEntries(new URLSearchParams(params))
-	openEitriApp('home', {
+	const payload = {
 		facets,
-		route: 'ProductCatalog',
 		sort: paramsObj?.O || paramsObj?.order || '',
 		filter: params
+	}
+	openEitriApp('home', {
+		route: 'ProductCatalog',
+		...payload,
+		params: payload
 	})
 	return true
 }
@@ -115,11 +123,15 @@ const resolveSearch = async (deeplink, params) => {
 
 	const term = deeplink.split('search/')[1]
 	const paramsObj = Object.fromEntries(new URLSearchParams(params))
-	openEitriApp('home', {
-		route: 'Search',
+	const payload = {
 		searchTerm: term,
 		sort: paramsObj?.O || paramsObj?.order,
 		filter: params
+	}
+	openEitriApp('home', {
+		route: 'Search',
+		...payload,
+		params: payload
 	})
 	return true
 }
