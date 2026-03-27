@@ -25,10 +25,7 @@ export default function Home(props) {
 
 	const resolveContent = async () => {
 		try {
-			// const startParams = await Eitri.getInitializationInfos()
-			const startParams = {
-				deeplink: 'ciamaritima://collection?filter=2075&order=OrderByPriceASC'
-			}
+			const startParams = await Eitri.getInitializationInfos()
 			if (!startParams) {
 				closeEitriApp()
 				return
