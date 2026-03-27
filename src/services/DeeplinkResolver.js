@@ -1,6 +1,6 @@
 import Eitri from 'eitri-bifrost'
 import { App } from 'eitri-shopping-vtex-shared'
-import { openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser } from './NavigationService'
+import { closeEitriApp, openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser } from './NavigationService'
 import { delay } from './UtilService'
 
 const resolveDeeplinkRoot = deeplink => {
@@ -135,7 +135,7 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 const resolveStoreLinks = deeplink => {
 	console.log('resolveStoreLinks')
 	if (deeplink.includes('play.google') || deeplink.includes('app.apple')) {
-		Eitri.close()
+		closeEitriApp()
 		return true
 	}
 	return false
@@ -180,9 +180,9 @@ export const resolveDeeplinkPath = async deeplink => {
 				console.error('Erro ao processar o deep link', error)
 			}
 		}
-		Eitri.close()
+		closeEitriApp()
 	} catch (error) {
 		console.error('Erro ao processar o deep link', error)
-		Eitri.close()
+		closeEitriApp()
 	}
 }

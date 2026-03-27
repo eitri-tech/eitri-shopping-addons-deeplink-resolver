@@ -1,5 +1,4 @@
 import Eitri from 'eitri-bifrost'
-import { getProductBySlug } from './ProductService'
 
 /**
  * Abre o EitriApp de detalhe do produto
@@ -7,27 +6,27 @@ import { getProductBySlug } from './ProductService'
  */
 export const openProduct = async product => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'pdp',
 			initParams: { product: product },
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to PDP: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const openProductBySlug = async slug => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'pdp',
 			initParams: { slug },
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to PDP: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
@@ -66,7 +65,7 @@ export const openHome = async deeplink => {
 		}
 
 		if (deeplink) {
-			Eitri.navigation.open({
+			await eitriNavigationOpen({
 				slug: 'home',
 				initParams: { params, route: 'ProductCatalog' },
 				replace: true
@@ -74,7 +73,7 @@ export const openHome = async deeplink => {
 		}
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
@@ -83,7 +82,7 @@ export const openHome = async deeplink => {
  */
 export const openLandingPage = async (title, lpname) => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'home',
 			initParams: {
 				route: 'LandingPage',
@@ -94,19 +93,19 @@ export const openLandingPage = async (title, lpname) => {
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const openCheckout = async () => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'checkout',
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to Checkout: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
@@ -115,9 +114,11 @@ export const openCheckout = async () => {
  */
 
 export const normalizePath = path => {
+	if (!path || typeof path !== 'string') return { facets: [] }
+
 	let pathComponents = decodeURIComponent(path).split('?')
 	let pathData = pathComponents[0].split('/').filter(Boolean)
-	let queryParams = new URLSearchParams(pathComponents[1])
+	let queryParams = new URLSearchParams(pathComponents[1] || '')
 	let normalizedData = { facets: [] }
 
 	if (queryParams.has('map')) {
@@ -134,21 +135,22 @@ export const normalizePath = path => {
 		})
 	}
 
-	if (path?.includes('filter')) {
-		const paramsArray = path.split('&')
-
-		paramsArray.forEach(param => {
-			if (param.startsWith('filter.')) {
-				const [keyWithFilter, value] = param.split('=')
-				const key = keyWithFilter.replace('filter.', '')
-				normalizedData.facets.push({
-					key: key,
-					value: decodeURIComponent(value)
-				})
-			}
-		})
+	let hasFilterInQuery = false
+	for (let [key, value] of queryParams.entries()) {
+		if (key.startsWith('filter.')) {
+			hasFilterInQuery = true
+			normalizedData.facets.push({
+				key: key.replace('filter.', ''),
+				value: value
+			})
+		} else if (key === 'sort') {
+			normalizedData.sort = value
+		} else if (key !== 'map') {
+			normalizedData[key] = value
+		}
 	}
-	if (!path?.includes('filter') && !queryParams.has('map')) {
+
+	if (!hasFilterInQuery && !queryParams.has('map')) {
 		pathData.forEach((value, index) => {
 			normalizedData.facets.push({
 				key: `category-${index + 1}`,
@@ -157,24 +159,13 @@ export const normalizePath = path => {
 		})
 	}
 
-	if (path?.includes('sort')) {
-		const sortMatch = path?.match(/sort=([^&]*)/)
-		normalizedData.sort = sortMatch ? decodeURIComponent(sortMatch[1]) : ''
-	}
-
-	for (let [key, value] of queryParams.entries()) {
-		if (key !== 'map') {
-			normalizedData[key] = value
-		}
-	}
-
 	return normalizedData
 }
 
 export const navigateHome = async (facets, title, type) => {
 	let initParams
 
-	if (facets.includes('?')) {
+	if (typeof facets === 'string' && facets.includes('?')) {
 		const normalize = normalizePath(facets)
 		initParams = { facets: normalize?.facets, sort: normalize?.sort, route: 'ProductCatalog', title }
 	} else {
@@ -182,54 +173,54 @@ export const navigateHome = async (facets, title, type) => {
 	}
 
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'home',
 			initParams: initParams,
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const navigateSearch = async value => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'home',
 			initParams: { searchTerm: value, route: 'Search' },
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const navigateToCategory = async (category, title) => {
 	const normalizedPath = normalizePath(category)
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug: 'home',
 			initParams: { params: normalizedPath, route: 'ProductCatalog', title },
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const openEitriApp = async (slug, params) => {
 	try {
-		Eitri.navigation.open({
+		await eitriNavigationOpen({
 			slug,
 			initParams: params,
 			replace: true
 		})
 	} catch (e) {
 		console.error('navigate to Home: Error', e)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
@@ -239,25 +230,26 @@ export const openRedirectLinkBrowser = async deeplink => {
 		const { applicationData } = await Eitri.getConfigs()
         let inApp = false
 
-        if (deeplink.startsWith('webview/inapp/')) { inApp = true }
+        if (typeof deeplink === 'string' && deeplink.startsWith('webview/inapp/')) { inApp = true }
 		let url =
 			applicationData.platform === 'ios'
 				? deeplink
-				: `https://faststore-cms.s3.us-east-1.amazonaws.com/redirect.html?link=${btoa(deeplink)}`
+				: `https://faststore-cms.s3.us-east-1.amazonaws.com/redirect.html?link=${btoa(deeplink || '')}`
 
 		Eitri.openBrowser({
 			url: url,
 			inApp: inApp
 		})
-		Eitri.close()
+		closeEitriApp()
 	} catch (error) {
 		console.error('Erro ao processar o deep link de busca', error)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
 
 export const openBrowser = async (url, inApp = true) => {
 	try {
+		if (typeof url !== 'string' || !url) return
 		// forçar sempre https
 		const formatedUrl = new URL(url.startsWith('http') ? url : `https://${url}`);
     	formatedUrl.protocol = 'https:';
@@ -266,9 +258,35 @@ export const openBrowser = async (url, inApp = true) => {
 			url: formatedUrl.toString(),
 			inApp
 		})
-		Eitri.close()
+		closeEitriApp()
 	} catch (error) {
 		console.error('Erro ao processar o deep link de busca', error)
-		Eitri.close()
+		closeEitriApp()
 	}
+}
+
+export const getDomain = (url) => {
+	try {
+		const { hostname } = new URL(url)
+		return hostname?.toLowerCase()
+	} catch (e) {
+		return null
+	}
+}
+
+let appIsOpen = true
+// centralizando Eitri.navigation.open, para melhorar debug de codigo
+export const eitriNavigationOpen = params => {
+	if (appIsOpen) {
+		// console.log('eitriNavigationOpen', params)
+		return Eitri.navigation.open(params)
+	} 
+}
+
+// centralizando Eitri.close, correção para condição de corrida
+export const closeEitriApp = async () => {
+	if (appIsOpen) {
+		appIsOpen = false
+		await Eitri.close()
+	} 
 }

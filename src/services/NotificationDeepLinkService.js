@@ -1,5 +1,5 @@
 import Eitri from 'eitri-bifrost'
-import { navigateHome, navigateSearch, navigateToCategory, openProductBySlug } from './NavigationService'
+import { closeEitriApp, navigateHome, navigateSearch, navigateToCategory, openProductBySlug } from './NavigationService'
 
 export const deeplinkActionsExecutor = content => {
 	if (!content || !content.action) {
@@ -28,7 +28,7 @@ export const deeplinkActionsExecutor = content => {
 				break
 			default:
 				console.error(`Unknown action type: ${action}`)
-				Eitri.close()
+				closeEitriApp()
 				return false
 		}
 	} catch (error) {

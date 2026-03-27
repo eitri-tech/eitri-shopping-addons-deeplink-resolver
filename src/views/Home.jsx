@@ -3,6 +3,7 @@ import { App, Vtex } from 'eitri-shopping-vtex-shared'
 import { deeplinkActionsExecutor } from '../services/NotificationDeepLinkService'
 import { resolveDeeplinkPath } from '../services/DeeplinkResolver'
 import { resolveUriDeeplinkScheme } from '../services/UriDeeplinkSchemeResolver'
+import { closeEitriApp } from '@/services/NavigationService'
 
 export default function Home(props) {
 	useEffect(() => {
@@ -26,14 +27,14 @@ export default function Home(props) {
 		try {
 			const startParams = await Eitri.getInitializationInfos()
 			if (!startParams) {
-				Eitri.close()
+				closeEitriApp()
 				return
 			}
 
 			await processStartParams(startParams)
 		} catch (error) {
 			console.error('Erro ao resolver parâmetros de inicialização:', error)
-			Eitri.close()
+			closeEitriApp()
 		}
 	}
 
@@ -85,10 +86,10 @@ export default function Home(props) {
 				})
 			}
 
-			Eitri.close()
+			closeEitriApp()
 		} catch (error) {
 			console.error('Erro ao processar os parametros de inicializacao', error)
-			Eitri.close()
+			closeEitriApp()
 		}
 	}
 

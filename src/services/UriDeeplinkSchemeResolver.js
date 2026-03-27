@@ -1,5 +1,5 @@
 import { getProductById, getProductBySlug } from './ProductService'
-import { openBrowser, openEitriApp, openProduct, openLandingPage } from './NavigationService'
+import { openBrowser, openEitriApp, openProduct, openLandingPage, closeEitriApp } from './NavigationService'
 import Eitri from 'eitri-bifrost'
 import { resolveDeeplinkFromRemoteConfig } from './DeeplinkResolver'
 import { delay } from './UtilService'
@@ -180,9 +180,9 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 				console.error('Erro ao processar o deep link', way.name, error)
 			}
 		}
-		Eitri.close()
+		closeEitriApp()
 	} catch (error) {
 		console.error('Erro ao processar o deep link', error)
-		Eitri.close()
+		closeEitriApp()
 	}
 }
