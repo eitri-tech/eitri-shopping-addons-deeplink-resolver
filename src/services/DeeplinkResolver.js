@@ -27,6 +27,7 @@ const resolveDeeplinkToProduct = async deeplink => {
 		if (baseUrl.toLowerCase().endsWith('/p')) {
 			const urlParts = baseUrl.split('/')
 			const productSlug = urlParts[urlParts.length - 2]
+			
 			if (productSlug) {
 				await openProductBySlug(productSlug)
 				return true
