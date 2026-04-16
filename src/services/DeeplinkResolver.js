@@ -43,10 +43,9 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 	console.log('resolveDeeplinkToProductCatalog')
 	if (!deeplink) return false
 
-  	deeplink = deeplink.replace(/^https?:\/\//, "").replace(/^www\./, "")
-
+	deeplink = deeplink.replace(/^https?:\/\//, "")
 	const host = App?.configs?.providerInfo?.host || App?.configs?.providerInfo?.domain // domain is deprecated
-  	const domain = host?.replace(/^https?:\/\//, "")?.replace(/^www\./, "")?.replace(/\/$/, "")
+	const domain = host?.replace(/^https?:\/\//, "")?.replace(/\/$/, "")
 
 	const [baseUrl, queryParams] = deeplink.split('?')
 
@@ -117,7 +116,7 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 		const [categoryPath] = path.split('?')
 		if (!categoryPath) return false
 
-		const categories = categoryPath.split("/").filter(Boolean);
+		const categories = categoryPath.split('/')
 		if (!categories) return false
 
 		const facets = categories.map((category, index) => ({
