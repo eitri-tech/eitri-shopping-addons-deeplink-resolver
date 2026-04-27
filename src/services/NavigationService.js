@@ -247,6 +247,26 @@ export const openRedirectLinkBrowser = async deeplink => {
 	}
 }
 
+
+export const openWebFlow = async (url) => {
+	try {
+		if (!url) closeEitriApp()
+		
+		const urlDomain = getDomain(url)
+		
+		await Eitri.webFlow.start({
+			"startUrl": url,
+			"stopPattern": "/oauth/finish",
+			"allowedDomains": [urlDomain]
+		})
+		
+	} catch (error) {
+		console.error('Erro ao processar a abertura da url via webflow', error)
+		closeEitriApp()
+	}
+}
+
+
 export const openBrowser = async (url, inApp = true) => {
 	try {
 		if (typeof url !== 'string' || !url) return
