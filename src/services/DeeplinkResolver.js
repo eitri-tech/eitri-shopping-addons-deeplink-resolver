@@ -158,13 +158,6 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 			return true
 		}
 
-		if (matchedDeeplink?.forwardQueryParams) {
-			const queryString = deeplink.split('?')[1] || ''
-			const queryParams = Object.fromEntries(new URLSearchParams(queryString))
-			openEitriApp(matchedDeeplink.slug, { ...matchedDeeplink.params, ...queryParams })
-			return true
-		}
-
 		openEitriApp(matchedDeeplink.slug, { deeplink, ...matchedDeeplink.params })
 		return true
 	} else {
