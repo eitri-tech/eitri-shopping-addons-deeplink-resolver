@@ -158,7 +158,7 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 			return true
 		}
 
-		openEitriApp(matchedDeeplink.slug, matchedDeeplink.params)
+		openEitriApp(matchedDeeplink.slug, { deeplink, ...matchedDeeplink.params })
 		return true
 	} else {
 		return false
