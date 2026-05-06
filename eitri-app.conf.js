@@ -12,7 +12,7 @@ module.exports = {
   "organizationId": "cf5660ee-bf90-42cd-9a43-9d2c69ee3c89",
   "organization": {},
   "eitri-app-dependencies": {
-    'eitri-shopping-vtex-shared': { isEitriAppShared: true, version: '1.1.4' }
+    'eitri-shopping-vtex-shared': { isEitriAppShared: true, version: '1.12.3' }
   },
   'sharedVersion': 'v2',
   "type": "module"
