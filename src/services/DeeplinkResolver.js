@@ -169,8 +169,8 @@ export const resolveDeeplinkPath = async deeplink => {
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
-		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkToProduct,
+		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkToProductCatalog,
 		openRedirectLinkBrowser
 	]
