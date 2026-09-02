@@ -140,7 +140,12 @@ const resolveSearch = async (deeplink, params) => {
 const resolveGeneric = async (deeplink, params) => {
 	if (!deeplink) return false
 
-	if (deeplink.startsWith('cart')) {
+	if (/^home(?:\/.*)?$/i.test(deeplink)) {
+		openEitriApp('home')
+		return true
+	}
+
+	if (/^cart(?:\/.*)?$/i.test(deeplink)) {
 		const cartId = deeplink.split('cart/')[1]
 		openEitriApp('cart', {
 			cartId: cartId
@@ -148,16 +153,11 @@ const resolveGeneric = async (deeplink, params) => {
 		return true
 	}
 
-	if (deeplink.startsWith('account')) {
+	if (/^account(?:\/.*)?$/i.test(deeplink)) {
 		const viewName = deeplink.split('account/')[1]
 		openEitriApp('account', {
 			route: viewName || ''
 		})
-		return true
-	}
-
-	if (deeplink.startsWith('home')) {
-		openEitriApp('home')
 		return true
 	}
 	
@@ -168,6 +168,7 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 	const [, basePath] = deeplink.split('://')
 	const [path, queryParams] = basePath.split(/\?(.*)/).filter(Boolean)
 	const deeplinkWays = [
+		resolveGeneric,
 		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkToProduct,
 		resolveCollection,
@@ -175,7 +176,6 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 		resolveWebView,
 		resolveSearch,
 		resolveLandingPage,
-		resolveGeneric
 	]
 
 	try {
