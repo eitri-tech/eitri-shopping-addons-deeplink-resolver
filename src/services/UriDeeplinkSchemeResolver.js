@@ -141,7 +141,7 @@ const resolveGeneric = async (deeplink, params) => {
 	if (!deeplink) return false
 
 	if (/^home(?:\/.*)?$/i.test(deeplink)) {
-		openEitriApp('home')
+		closeEitriApp()
 		return true
 	}
 
