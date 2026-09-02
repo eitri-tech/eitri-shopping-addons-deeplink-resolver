@@ -69,6 +69,10 @@ export default function Home(props) {
 					await resolveDeeplinkStartParams(deeplink)
 					return
 				} else {
+					const queryParams = deeplink.split('?')[1]
+					if (queryParams) {
+						await resolveUtmParams(queryParams)
+					}
 					await resolveUriDeeplinkScheme(deeplink)
 					return
 				}
