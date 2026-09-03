@@ -26,6 +26,7 @@ export default function Home(props) {
 	const resolveContent = async () => {
 		try {
 			const startParams = await Eitri.getInitializationInfos()
+
 			if (!startParams) {
 				closeEitriApp()
 				return
@@ -113,15 +114,18 @@ export default function Home(props) {
 		if (!queryParams) return
 		const paramsArray = queryParams.split('&')
 		const paramsObject = {}
-		paramsArray.forEach(param => {
+		paramsArray?.forEach(param => {
 			const [key, value] = param.split('=')
 			if (key.startsWith('utm')) {
 				paramsObject[key] = value
 			}
 		})
 
-		// o utm_source será definido pelo app
-		paramsObject.utm_source = null
+		const awinParam = paramsArray?.find(k => k.startsWith("awc="))
+		if (awinParam) {
+			const awc = awinParam.split('=')[1]
+			paramsObject.utm_campaign = awc
+		}
 
 		await saveUtmParams(paramsObject)
 	}
