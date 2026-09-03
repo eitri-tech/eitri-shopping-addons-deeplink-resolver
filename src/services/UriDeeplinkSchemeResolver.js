@@ -1,7 +1,7 @@
 import { getProductById, getProductBySlug } from './ProductService'
 import { openBrowser, openEitriApp, openProduct, openLandingPage, closeEitriApp } from './NavigationService'
 import Eitri from 'eitri-bifrost'
-import { resolveDeeplinkFromRemoteConfig } from './DeeplinkResolver'
+import { resolveDeeplinkFromRemoteConfig, landingPageExistsInCms } from './DeeplinkResolver'
 import { delay } from './UtilService'
 
 const resolveDeeplinkToProduct = async deeplink => {
@@ -88,7 +88,8 @@ const resolveLandingPage = async (deeplink, params) => {
 		if (_deeplink === 'landingpage') {
 			const paramsObj = Object.fromEntries(new URLSearchParams(params))
 			const title = paramsObj?.title || ""
-			const lpname = deeplink?.split('/')?.[1]
+			// mantém o path completo após o prefixo (ex: landingpage/especial/cliente-a -> especial/cliente-a)
+			const lpname = deeplink?.replace(/^[^/]+\//, '')
 			openLandingPage(title, lpname)
 			return true
 		}
@@ -164,6 +165,23 @@ const resolveGeneric = async (deeplink, params) => {
 	return false
 }
 
+// Landing page enviada sem o prefixo "landingpage/" (ex: scheme://especial/cliente-a):
+// último recurso antes de fechar o app — valida a existência no CMS antes de abrir,
+// mesmo padrão das URLs http; sem match no CMS, segue o pipeline (closeEitriApp)
+const resolveCmsLandingPage = async (deeplink, params) => {
+	if (!deeplink) return false
+
+	const lpname = deeplink.replace(/^\//, '').replace(/\/$/, '')
+	if (!lpname) return false
+
+	const exists = await landingPageExistsInCms(lpname)
+	if (!exists) return false
+
+	const paramsObj = Object.fromEntries(new URLSearchParams(params))
+	openLandingPage(paramsObj?.title || '', lpname)
+	return true
+}
+
 export const resolveUriDeeplinkScheme = async deeplink => {
 	const [, basePath] = deeplink.split('://')
 	const [path, queryParams] = basePath.split(/\?(.*)/).filter(Boolean)
@@ -176,6 +194,7 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 		resolveWebView,
 		resolveSearch,
 		resolveLandingPage,
+		resolveCmsLandingPage
 	]
 
 	try {

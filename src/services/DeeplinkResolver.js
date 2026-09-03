@@ -1,6 +1,14 @@
 import Eitri from 'eitri-bifrost'
-import { App } from 'eitri-shopping-vtex-shared'
-import { closeEitriApp, openEitriApp, openHome, openProductBySlug, openRedirectLinkBrowser, openWebFlow } from './NavigationService'
+import { App, Vtex } from 'eitri-shopping-vtex-shared'
+import {
+	closeEitriApp,
+	openEitriApp,
+	openHome,
+	openLandingPage,
+	openProductBySlug,
+	openRedirectLinkBrowser,
+	openWebFlow
+} from './NavigationService'
 import { delay } from './UtilService'
 
 const resolveDeeplinkRoot = deeplink => {
@@ -165,12 +173,56 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 	}
 }
 
+// Landing page por URL do site (ex: https://www.loja.com.br/especial/cliente-a):
+// extrai o path da rota e consulta o CMS para saber se existe uma landing page com esse
+// nome — tenta "especial/cliente-a" e "/especial/cliente-a", mesmo padrão da view LandingPage.
+const resolveDeeplinkLandingPage = async deeplink => {
+	try {
+		console.log('resolveDeeplinkLandingPage')
+		const [baseUrl] = deeplink.split('?')
+		const host = App?.configs?.providerInfo?.host || App?.configs?.providerInfo?.domain
+		const domain = host?.replace(/^https?:\/\//, '')?.replace(/^www\./, '')?.replace(/\/$/, '')
+		if (!domain) return false
+
+		const lpname = baseUrl
+			.replace(/^https?:\/\//, '')
+			.replace(/^www\./, '')
+			.replace(new RegExp(`^${domain}`), '')
+			.split('#')[0]
+			.replace(/^\//, '')
+			.replace(/\/$/, '')
+		if (!lpname) return false
+
+		const exists = await landingPageExistsInCms(lpname)
+		if (!exists) return false
+
+		openLandingPage('', lpname)
+		return true
+	} catch (error) {
+		console.error('Erro ao processar o deep link de landing page', error)
+		return false
+	}
+}
+
+export const landingPageExistsInCms = async pageName => {
+	const { faststore } = Vtex?.configs || {}
+	if (!faststore || !pageName) return false
+
+	for (const name of [pageName, `/${pageName}`]) {
+		const result = await Vtex.cms.getPagesByContentTypes(faststore, 'landingPage', { 'filters[name]': name })
+		if (result?.data?.length > 0) return true
+	}
+
+	return false
+}
+
 export const resolveDeeplinkPath = async deeplink => {
 	const deeplinkWays = [
 		resolveStoreLinks,
 		resolveDeeplinkRoot,
 		resolveDeeplinkToProduct,
 		resolveDeeplinkFromRemoteConfig,
+		resolveDeeplinkLandingPage,
 		resolveDeeplinkToProductCatalog,
 		openRedirectLinkBrowser
 	]
