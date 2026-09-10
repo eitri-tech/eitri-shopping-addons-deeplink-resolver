@@ -162,7 +162,11 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 
 	if (matchedDeeplink) {
 		if (matchedDeeplink?.forceWeb) {
-			openWebFlow(matchedDeeplink?.forceWeb)
+			if (matchedDeeplink.forceWeb === true) {
+				openRedirectLinkBrowser(deeplink)
+			} else {
+				openWebFlow(matchedDeeplink.forceWeb)
+			}
 			return true
 		}
 
