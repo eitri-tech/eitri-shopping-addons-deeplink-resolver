@@ -140,16 +140,6 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 	}
 }
 
-const resolveShareLink = deeplink => {
-	// A pedido da montecarlo - essa rota estava caindo no ultimo resolver a abrindo um PLP de forma errônea
-	console.log('resolveShareLink')
-	if (deeplink.includes('/api/io/_v/share/')) {
-		openRedirectLinkBrowser(deeplink)
-		return true
-	}
-	return false
-}
-
 const resolveStoreLinks = deeplink => {
 	console.log('resolveStoreLinks')
 	if (deeplink.includes('play.google') || deeplink.includes('app.apple')) {
@@ -172,7 +162,11 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 
 	if (matchedDeeplink) {
 		if (matchedDeeplink?.forceWeb) {
-			openWebFlow(matchedDeeplink?.forceWeb)
+			if (matchedDeeplink.forceWeb === true) {
+				openRedirectLinkBrowser(deeplink)
+			} else {
+				openWebFlow(matchedDeeplink.forceWeb)
+			}
 			return true
 		}
 
@@ -233,7 +227,6 @@ export const resolveDeeplinkPath = async deeplink => {
 		resolveDeeplinkToProduct,
 		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkLandingPage,
-		resolveShareLink,
 		resolveDeeplinkToProductCatalog,
 		openRedirectLinkBrowser
 	]
