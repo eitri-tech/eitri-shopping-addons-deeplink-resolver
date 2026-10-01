@@ -92,6 +92,26 @@ Where:
 `slug`: is the slug of your app's Eitri-app to which you want to redirect the user  
 `params`: are the [initialization parameters](https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos) you want to send to the Eitri-app when it is called
 
+#### urlResolver
+
+For stores whose CMS defines URLs that cannot be inferred from the path (e.g. `/jewelry/stones/agate` being a PLP with its own facets), you can point to a store endpoint that answers which screen to open. It is queried after `deeplinkMap` and before the fallback that reads the path as categories.
+
+```json
+{
+    "deeplink": {
+        "urlResolver": "https://www.mystore.com/_app/deeplink"
+    }
+}
+```
+
+The resolver calls `GET <urlResolver>?url=<encoded deeplink>` and expects a response in the same shape as a `deeplinkMap` entry:
+
+```json
+{ "slug": "my-eitri-app-home", "params": { "route": "ProductCatalog", "params": { "facets": [{ "key": "productClusterIds", "value": "139" }] } } }
+```
+
+or `{ "forceWeb": true }` to open it in the browser. Any other response (404, error, 2s timeout, no `slug`) continues the regular resolution chain.
+
 #### Example Environment Configuration
 
 ```json

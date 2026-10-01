@@ -161,18 +161,58 @@ export const resolveDeeplinkFromRemoteConfig = deeplink => {
 	})
 
 	if (matchedDeeplink) {
-		if (matchedDeeplink?.forceWeb) {
-			if (matchedDeeplink.forceWeb === true) {
-				openRedirectLinkBrowser(deeplink)
-			} else {
-				openWebFlow(matchedDeeplink.forceWeb)
-			}
-			return true
-		}
-
-		openEitriApp(matchedDeeplink.slug, { deeplink, ...matchedDeeplink.params })
+		openDeeplinkEntry(matchedDeeplink, deeplink)
 		return true
 	} else {
+		return false
+	}
+}
+
+// Abre o destino de uma entrada no formato do deeplinkMap — vinda do remote
+// config ou do urlResolver.
+const openDeeplinkEntry = (entry, deeplink) => {
+	if (entry?.forceWeb) {
+		if (entry.forceWeb === true) {
+			openRedirectLinkBrowser(deeplink)
+		} else {
+			openWebFlow(entry.forceWeb)
+		}
+		return
+	}
+
+	openEitriApp(entry.slug, { deeplink, ...entry.params })
+}
+
+const URL_RESOLVER_TIMEOUT_MS = 2000
+
+// Para lojas cujo CMS define as próprias URLs (PLPs com path livre, que não dá
+// para deduzir do path): pergunta a um endpoint da loja qual tela abrir.
+//
+//   "deeplink": { "urlResolver": "https://www.loja.com.br/_app/deeplink" }
+//
+// O resolver chama GET <urlResolver>?url=<deeplink> e espera uma entrada no
+// formato do deeplinkMap ({ slug, params } ou { forceWeb }). Qualquer outra
+// coisa — 404, erro, timeout, resposta sem slug — segue para o próximo resolver,
+// então sem a config o comportamento é o de sempre.
+const resolveDeeplinkFromUrlResolver = async deeplink => {
+	console.log('resolveDeeplinkFromUrlResolver')
+	const urlResolver = App?.configs?.deeplink?.urlResolver
+	if (!urlResolver) return false
+
+	try {
+		const response = await Promise.race([
+			Eitri.http.get(`${urlResolver}?url=${encodeURIComponent(deeplink)}`, {
+				timeout: URL_RESOLVER_TIMEOUT_MS
+			}),
+			delay(URL_RESOLVER_TIMEOUT_MS).then(() => null)
+		])
+		const entry = typeof response?.data === 'string' ? JSON.parse(response.data) : response?.data
+		if (!entry?.forceWeb && typeof entry?.slug !== 'string') return false
+
+		openDeeplinkEntry(entry, deeplink)
+		return true
+	} catch (error) {
+		console.error('Erro ao consultar o urlResolver', error)
 		return false
 	}
 }
@@ -226,6 +266,7 @@ export const resolveDeeplinkPath = async deeplink => {
 		resolveDeeplinkRoot,
 		resolveDeeplinkToProduct,
 		resolveDeeplinkFromRemoteConfig,
+		resolveDeeplinkFromUrlResolver,
 		resolveDeeplinkLandingPage,
 		resolveDeeplinkToProductCatalog,
 		openRedirectLinkBrowser

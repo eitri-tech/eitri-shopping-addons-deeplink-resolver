@@ -91,6 +91,26 @@ Onde:
 `slug`: é o slug do Eitri-app de seu app para qual deseja direcionar o usuário
 `params`: são os [parâmetros de inicialização](https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos) que deseja enviar ao Eitri-app quando ele for chamado 
 
+#### urlResolver
+
+Para lojas cujo CMS define URLs que não dá para deduzir do path (ex.: `/joias/pedras/agata` sendo uma PLP com facets próprios), você pode apontar um endpoint da loja que responde qual tela abrir. Ele é consultado depois do `deeplinkMap` e antes do fallback que interpreta o path como categorias.
+
+```json
+{
+    "deeplink": {
+        "urlResolver": "https://www.minhaloja.com.br/_app/deeplink"
+    }
+}
+```
+
+O resolver faz `GET <urlResolver>?url=<deeplink codificado>` e espera uma resposta no mesmo formato de uma entrada do `deeplinkMap`:
+
+```json
+{ "slug": "my-eitri-app-home", "params": { "route": "ProductCatalog", "params": { "facets": [{ "key": "productClusterIds", "value": "139" }] } } }
+```
+
+ou `{ "forceWeb": true }` para abrir no navegador. Qualquer outra resposta (404, erro, timeout de 2s, sem `slug`) segue a cadeia normal de resolução.
+
 #### Exemplo de configuração de ambiente
 
 ```json
