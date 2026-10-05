@@ -30,6 +30,19 @@ export const openProductBySlug = async slug => {
 	}
 }
 
+export const openProductById = async productId => {
+	try {
+		await eitriNavigationOpen({
+			slug: 'pdp',
+			initParams: { productId },
+			replace: true
+		})
+	} catch (e) {
+		console.error('navigate to PDP: Error', e)
+		closeEitriApp()
+	}
+}
+
 function resolveFacets(facet) {
 	let query = null
 

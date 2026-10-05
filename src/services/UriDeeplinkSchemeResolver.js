@@ -1,27 +1,24 @@
-import { getProductById, getProductBySlug } from './ProductService'
-import { openBrowser, openEitriApp, openProduct, openLandingPage, closeEitriApp } from './NavigationService'
+import { openBrowser, openEitriApp, openProductById, openProductBySlug, openLandingPage, closeEitriApp } from './NavigationService'
 import Eitri from 'eitri-bifrost'
 import { resolveDeeplinkFromRemoteConfig, landingPageExistsInCms } from './DeeplinkResolver'
 import { delay } from './UtilService'
 
 const resolveDeeplinkToProduct = async deeplink => {
 	try {
-		let product = null
-
 		if (deeplink?.startsWith('product/id')) {
 			const productId = deeplink.split('product/id/')[1]
-			product = await getProductById(productId)
+			if (productId) {
+				await openProductById(productId)
+				return true
+			}
 		}
 
 		if (deeplink?.startsWith('product/slug')) {
 			const productSlug = deeplink.split('product/slug/')[1]
-			const _product = await getProductBySlug(productSlug)
-			product = _product?.[0]
-		}
-
-		if (product) {
-			openProduct(product)
-			return true
+			if (productSlug) {
+				await openProductBySlug(productSlug)
+				return true
+			}
 		}
 
 		return false
