@@ -2,6 +2,7 @@ import { openBrowser, openEitriApp, openProductById, openProductBySlug, openLand
 import Eitri from 'eitri-bifrost'
 import { resolveDeeplinkFromRemoteConfig, landingPageExistsInCms } from './DeeplinkResolver'
 import { delay } from './UtilService'
+import { resolveDeeplinkFromCms } from './CmsDeeplinkService'
 
 const resolveDeeplinkToProduct = async deeplink => {
 	try {
@@ -184,6 +185,7 @@ export const resolveUriDeeplinkScheme = async deeplink => {
 	const [path, queryParams] = basePath.split(/\?(.*)/).filter(Boolean)
 	const deeplinkWays = [
 		resolveGeneric,
+		resolveDeeplinkFromCms,
 		resolveDeeplinkFromRemoteConfig,
 		resolveDeeplinkToProduct,
 		resolveCollection,

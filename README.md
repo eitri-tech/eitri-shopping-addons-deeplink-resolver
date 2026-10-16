@@ -6,7 +6,7 @@ O Eitri Deeplink Resolver é um addon plug-n-play para aplicações do Eitri App
 
 Com ele você pode dar ao seu app a capacidade de interpretar e direcionar para a página correta do app a grande maioria dos deeplinks padrão de e-commerce como deeplinks de páginas de categoria, produto, coleções, favoritos, minha conta e muito mais.
 
-Alem disso, você pode configurar regras e caminhos personalizados para seus deeplinks a partir da configuração remota de sua aplicação.
+Alem disso, você pode configurar regras e caminhos personalizados para seus deeplinks a partir da configuração remota de sua aplicação ou, para lojas Vtex, [pelo CMS](#personalizando-deeplinks-pelo-cms-vtex).
 
 Se preferir você pode tambem criar uma cópia do Deeplink Resolver em sua aplicação para personalizar ainda mais os comportamentos usando nosso template.
 
@@ -156,6 +156,63 @@ Onde:
     }
 }
 ```
+
+### Personalizando deeplinks pelo CMS (Vtex)
+
+Além do `deeplinkMap` da configuração remota, os redirecionamentos também podem ser cadastrados no CMS da Vtex (FastStore), permitindo que o time gestor do app mantenha seus deeplinks sem alterar a configuração de ambiente.
+
+A mecânica é a mesma do `deeplinkMap`: cada componente cadastrado define termos de `path` e, quando o deeplink contém algum desses termos, o usuário é direcionado ao destino configurado. A ordem dos componentes na página define a prioridade (vale o primeiro que encontrar um termo). Os redirecionamentos do CMS são avaliados **antes** do `deeplinkMap` da configuração remota, que continua funcionando normalmente para os deeplinks não cadastrados no CMS.
+
+#### Configurando o CMS
+
+Inclua no CMS do app (arquivos `content-types.json` e `sections.json`) o content type `deeplink` e o componente `deeplink`, restrito a ele pelo escopo:
+
+```json
+{
+    "id": "deeplink",
+    "name": "Deeplinks",
+    "scopes": ["deeplink"],
+    "isSingleton": true,
+    "configurationSchemaSets": []
+}
+```
+
+```json
+{
+    "name": "deeplink",
+    "requiredScopes": ["deeplink"],
+    "schema": { "...": "..." }
+}
+```
+
+O schema completo do componente pode ser copiado do app de referência `eitri-shopping-bodyforsure` (`eitri-shopping-bodyforsure-home/public/sections.json`).
+
+#### Campos do componente
+
+`path`: lista de termos que deseja identificar no deeplink  
+`action`: destino do redirecionamento, no mesmo modelo dos banners da home (`type`, `value`, `sort` e `title`)  
+`remoteConfigKey` (opcional): o redirecionamento só é aplicado quando esta chave estiver habilitada  
+`startDate` / `endDate` (opcionais): período de vigência do redirecionamento  
+`name` (opcional): identificação interna
+
+#### Tipos de ação (`action.type`)
+
+| Tipo | `value` | Destino |
+|---|---|---|
+| `link` | URL completa (com `https://`) | Abre a URL via WebFlow |
+| `product` | Id ou slug do produto | PDP |
+| `collection` | Id da coleção | Listagem de produtos da coleção |
+| `category` | Caminho da categoria (`cat1/cat2/cat3`) | Listagem de produtos da categoria |
+| `search` | Termo de busca | Resultado da busca |
+| `page` | Nome da landing page no CMS | Landing page |
+| `path` | Path do site (aceita `map`, `filter.*` e `sort`) | Listagem de produtos |
+| `brand` | Nome da marca | Listagem de produtos da marca |
+| `cart` | — | Carrinho |
+| `account` | Opcional: nome da view do Eitri-app de conta (ex: `AboutUs`) | View informada ou, sem `value`, a página inicial da conta |
+| `wishlist` | — | Favoritos (`account`, rota `Wishlist`) |
+| `orders` | — | Meus pedidos (`account`, rota `OrderList`) |
+
+Para `collection`, `category` e `brand`, o campo `sort` define a ordenação e `title` o título exibido na listagem.
 
 
 ### Criando seu próprio Deeplink Resolver
