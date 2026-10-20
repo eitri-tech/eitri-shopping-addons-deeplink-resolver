@@ -30,19 +30,82 @@ Para ativar o deeplink resolver com os comportamentos padrão, siga os seguintes
 
 Inclua em qualquer parte da raiz do JSON o `deeplinkResolver` com o slug de nosso Eitri-app para ativar o suporte ao processamento de deeplinks.
 
-Esta entrada define qual será o Eitri-app responsável por processar seus deeplinks.
+Esta entrada define qual será o Eitri-app responsável por processar seus deeplinks. Recomendamos que você use um alias "deeplink-resolver" e atribua este alias ao eitriapp que preferir.
 
 ```json
     "deeplinkResolver": {
-        "slug": "eitri-shopping-addons-deeplink-resolver"
+        "slug": "deeplink-resolver"
     }
 ```
 
 ### Personalizando deeplinks para seu app
 
-Alem dos deeplinks padrão, você pode definir deeplinks customizados para seu App para expandir ainda mais as possibilidades de tratamento e abertura de páginas do seu aplicativo. Para isso inclua as informações em sua configuração de ambiente conforme descrito à seguir.
+Alem dos deeplinks padrão, você pode definir deeplinks customizados para seu App para expandir ainda mais as possibilidades de tratamento e abertura de páginas do seu aplicativo. Para isso existem 2 métodos:
 
-#### deeplinks
+#### Personalizando deeplinks pelo CMS (Vtex)
+
+Para personalizar os deeplinks e seus comportamentos pelo CMS da Vtex, basta cadastrar uma página do tipo Deeplink e incluir componentes do tipo "deeplink" dentro dela.
+
+Cada componente cadastrado define termos de `path` e, quando o deeplink contém algum desses termos, o usuário é direcionado ao destino configurado.
+
+A ordem dos componentes na página define a prioridade (vale o primeiro que encontrar um termo).
+
+##### Configurando o CMS
+Se eu aplicativon ainda não tem este recurso mas você deseja utilizar, basta incluir no CMS do app (arquivos `content-types.json` e `sections.json`) o content type `deeplink` e o componente `deeplink` conforme as recomendações abaixo:
+
+``content-types.json``
+
+```json
+{
+    "id": "deeplink",
+    "name": "Deeplinks",
+    "scopes": ["deeplink"],
+    "isSingleton": true,
+    "configurationSchemaSets": []
+}
+```
+
+``sections.json``
+
+O componente `deeplink` completo, com todo o schema, está no arquivo de exemplo [public/sections.json](public/sections.json) (último item da lista). O arquivo [public/content-types.json](public/content-types.json) mostra o content type acima junto dos demais content types de um app.
+
+##### Campos do componente
+
+`path`: lista de termos que deseja identificar no deeplink  
+`action`: destino do redirecionamento, no mesmo modelo dos banners da home (`type`, `value`, `sort` e `title`)  
+`remoteConfigKey` (opcional): o redirecionamento só é aplicado quando esta chave estiver habilitada  
+`startDate` / `endDate` (opcionais): período de vigência do redirecionamento  
+`name` (opcional): identificação interna
+
+#### Tipos de ação (`action.type`)
+
+| Tipo | `value` | Destino |
+|---|---|---|
+| `link` | URL completa (com `https://`) | Abre a URL via WebFlow |
+| `product` | Id ou slug do produto | PDP |
+| `collection` | Id da coleção | Listagem de produtos da coleção |
+| `category` | Caminho da categoria (`cat1/cat2/cat3`) | Listagem de produtos da categoria |
+| `search` | Termo de busca | Resultado da busca |
+| `page` | Nome da landing page no CMS | Landing page |
+| `path` | Path do site (aceita `map`, `filter.*` e `sort`) | Listagem de produtos |
+| `brand` | Nome da marca | Listagem de produtos da marca |
+| `cart` | — | Carrinho |
+| `account` | Opcional: nome da view do Eitri-app de conta (ex: `AboutUs`) | View informada ou, sem `value`, a página inicial da conta |
+| `wishlist` | — | Favoritos (`account`, rota `Wishlist`) |
+| `orders` | — | Meus pedidos (`account`, rota `OrderList`) |
+
+Para `collection`, `category` e `brand`, o campo `sort` define a ordenação e `title` o título exibido na listagem.
+
+
+
+> [!IMPORTANT]
+> Você só pode ter uma página de deeplinks mas pode ter ilimitados deeplinks configurados.
+> A ordem dos deeplinks cadastrados é a ordem de prioridade no direcionamento.
+> Ao criar a página Deeplinks no CMS ela tem prioridade sobre qualquer mapeamento de deeplinks feito no remote config Eitri conforme a descrição do próximo item
+
+#### [OBSOLETO] entrada deeplinks no remote config Eitri
+
+Os redirecionamentos do CMS são avaliados **antes** do `deeplinkMap` da configuração remota, mas ele continua funcionando normalmente.
 
 Inclua em qualquer parte da raiz do JSON o `deeplink` com `deeplinkMap` dentro dele. Em `deeplinkMap` você deve criar um array com um objeto para cada personalização de path que deseja receber e tratar.
 
@@ -113,20 +176,6 @@ Onde:
             },
             {
                 "path": [
-                    "outlet"
-                ],
-                "slug": "my-eitri-app-home",
-                "params": {
-                    "route": "ProductCatalog",
-                    "facets": [
-                        {
-                            "productClusterIds": 165
-                        }
-                    ]
-                }
-            },
-            {
-                "path": [
                     "wishilist"
                 ],
                 "slug": "my-eitri-app-account",
@@ -139,15 +188,6 @@ Onde:
                     "login"
                 ],
                 "slug": "my-eitri-app-account"
-            },
-            {
-                "path": [
-                    "_secure/account#/orders"
-                ],
-                "slug": "my-eitri-app-account",
-                "params": {
-                    "route": "orders"
-                }
             }
         ]
     },
@@ -157,67 +197,9 @@ Onde:
 }
 ```
 
-### Personalizando deeplinks pelo CMS (Vtex)
-
-Além do `deeplinkMap` da configuração remota, os redirecionamentos também podem ser cadastrados no CMS da Vtex (FastStore), permitindo que o time gestor do app mantenha seus deeplinks sem alterar a configuração de ambiente.
-
-A mecânica é a mesma do `deeplinkMap`: cada componente cadastrado define termos de `path` e, quando o deeplink contém algum desses termos, o usuário é direcionado ao destino configurado. A ordem dos componentes na página define a prioridade (vale o primeiro que encontrar um termo). Os redirecionamentos do CMS são avaliados **antes** do `deeplinkMap` da configuração remota, que continua funcionando normalmente para os deeplinks não cadastrados no CMS.
-
-#### Configurando o CMS
-
-Inclua no CMS do app (arquivos `content-types.json` e `sections.json`) o content type `deeplink` e o componente `deeplink`, restrito a ele pelo escopo:
-
-```json
-{
-    "id": "deeplink",
-    "name": "Deeplinks",
-    "scopes": ["deeplink"],
-    "isSingleton": true,
-    "configurationSchemaSets": []
-}
-```
-
-```json
-{
-    "name": "deeplink",
-    "requiredScopes": ["deeplink"],
-    "schema": { "...": "..." }
-}
-```
-
-O schema completo do componente pode ser copiado do app de referência `eitri-shopping-bodyforsure` (`eitri-shopping-bodyforsure-home/public/sections.json`).
-
-#### Campos do componente
-
-`path`: lista de termos que deseja identificar no deeplink  
-`action`: destino do redirecionamento, no mesmo modelo dos banners da home (`type`, `value`, `sort` e `title`)  
-`remoteConfigKey` (opcional): o redirecionamento só é aplicado quando esta chave estiver habilitada  
-`startDate` / `endDate` (opcionais): período de vigência do redirecionamento  
-`name` (opcional): identificação interna
-
-#### Tipos de ação (`action.type`)
-
-| Tipo | `value` | Destino |
-|---|---|---|
-| `link` | URL completa (com `https://`) | Abre a URL via WebFlow |
-| `product` | Id ou slug do produto | PDP |
-| `collection` | Id da coleção | Listagem de produtos da coleção |
-| `category` | Caminho da categoria (`cat1/cat2/cat3`) | Listagem de produtos da categoria |
-| `search` | Termo de busca | Resultado da busca |
-| `page` | Nome da landing page no CMS | Landing page |
-| `path` | Path do site (aceita `map`, `filter.*` e `sort`) | Listagem de produtos |
-| `brand` | Nome da marca | Listagem de produtos da marca |
-| `cart` | — | Carrinho |
-| `account` | Opcional: nome da view do Eitri-app de conta (ex: `AboutUs`) | View informada ou, sem `value`, a página inicial da conta |
-| `wishlist` | — | Favoritos (`account`, rota `Wishlist`) |
-| `orders` | — | Meus pedidos (`account`, rota `OrderList`) |
-
-Para `collection`, `category` e `brand`, o campo `sort` define a ordenação e `title` o título exibido na listagem.
-
-
 ### Criando seu próprio Deeplink Resolver
 
-Caso as personalizações via configuração remota não atendam suas necessidades, é possível tambem criar seu próprio Eitri-app de tratamento de deeplinks.
+Caso as personalizações não atendam suas necessidades, é possível tambem criar seu próprio Eitri-app de tratamento de deeplinks para manipular completamente o código uilizado.
 
 Para isso, utilize o [`eitri create` com o parâmetro `--template`](https://docs.eitri.tech/pt/eitri-cli/#opcoes-disponiveis_1) e selecione o template `eitri-shopping-addons-deeplink-resolver`.
 
