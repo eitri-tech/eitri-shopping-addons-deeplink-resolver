@@ -11,6 +11,7 @@ import {
 } from './NavigationService'
 import { delay } from './UtilService'
 import { resolveDeeplinkFromCms } from './CmsDeeplinkService'
+import { getProductBySlug } from './ProductService'
 
 const resolveDeeplinkRoot = deeplink => {
 	console.log('resolveDeeplinkRoot')
@@ -28,6 +29,25 @@ const resolveDeeplinkRoot = deeplink => {
 	return false
 }
 
+// Lojas FastStore usam URL de produto no formato "{linkText}-{skuId}/p" (ex: chinelo-x-93000020-25573/p),
+// e esse slug com o skuId não existe no catálogo. Se o slug inteiro não encontra produto, tenta o linkText
+// sem o sufixo numérico, desde que o sufixo seja um SKU desse produto (linkText também pode terminar em número).
+const resolveProductSlug = async slug => {
+	const [, linkText, skuId] = slug.match(/^(.+)-(\d+)$/) || []
+	if (!linkText) return slug
+
+	try {
+		const products = await getProductBySlug(slug)
+		if (products?.length) return slug
+
+		const [product] = (await getProductBySlug(linkText)) || []
+		return product?.items?.some(item => item.itemId === skuId) ? linkText : slug
+	} catch (error) {
+		console.error('Erro ao validar o slug do produto', error)
+		return slug
+	}
+}
+
 const resolveDeeplinkToProduct = async deeplink => {
 	try {
 		console.log('resolveDeeplinkToProduct')
@@ -37,7 +57,7 @@ const resolveDeeplinkToProduct = async deeplink => {
 			const urlParts = baseUrl.split('/')
 			const productSlug = urlParts[urlParts.length - 2]
 			if (productSlug) {
-				await openProductBySlug(productSlug)
+				await openProductBySlug(await resolveProductSlug(productSlug))
 				return true
 			}
 		}
