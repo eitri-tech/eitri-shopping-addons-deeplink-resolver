@@ -154,49 +154,6 @@ Onde:
 `slug`: é o slug do Eitri-app de seu app para qual deseja direcionar o usuário
 `params`: são os [parâmetros de inicialização](https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos) que deseja enviar ao Eitri-app quando ele for chamado 
 
-#### Exemplo de configuração de ambiente
-
-```json
-{
-    "deeplink": {
-        "deeplinkMap": [
-            {
-                "path": [
-                    "novidades"
-                ],
-                "slug": "my-eitri-app-home",
-                "params": {
-                    "route": "ProductCatalog",
-                    "facets": [
-                        {
-                            "productClusterIds": 139
-                        }
-                    ]
-                }
-            },
-            {
-                "path": [
-                    "wishilist"
-                ],
-                "slug": "my-eitri-app-account",
-                "params": {
-                    "route": "whishlist"
-                }
-            },
-            {
-                "path": [
-                    "login"
-                ],
-                "slug": "my-eitri-app-account"
-            }
-        ]
-    },
-    "deeplinkResolver": {
-        "slug": "eitri-shopping-addons-deeplink-resolver"
-    }
-}
-```
-
 ### Criando seu próprio Deeplink Resolver
 
 Caso as personalizações não atendam suas necessidades, é possível tambem criar seu próprio Eitri-app de tratamento de deeplinks para manipular completamente o código uilizado.
