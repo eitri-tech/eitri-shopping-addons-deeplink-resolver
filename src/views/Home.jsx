@@ -4,6 +4,7 @@ import { deeplinkActionsExecutor } from '../services/NotificationDeepLinkService
 import { resolveDeeplinkPath } from '../services/DeeplinkResolver'
 import { resolveUriDeeplinkScheme } from '../services/UriDeeplinkSchemeResolver'
 import { closeEitriApp } from '@/services/NavigationService'
+import { normalizeUrl } from '@/services/UtilService'
 
 export default function Home(props) {
 	useEffect(() => {
@@ -99,6 +100,15 @@ export default function Home(props) {
 	}
 
 	const resolveDeeplinkStartParams = async deeplink => {
+
+		if (/\.go\.link/i.test(deeplink)) {
+			const remoteConfig = await Eitri.environment.getRemoteConfigs()
+			const host = remoteConfig?.providerInfo?.host || remoteConfig?.providerInfo?.domain
+			if (host) {
+				deeplink = normalizeUrl(deeplink, host)
+			}
+		}
+		
 		const [, queryParams] = deeplink?.split('?')
 
 		try {
