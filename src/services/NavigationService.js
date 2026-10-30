@@ -199,13 +199,7 @@ export const navigateHome = async (facets, title, type) => {
 
 	if (typeof facets === 'string' && facets.includes('?')) {
 		const normalize = normalizePath(facets)
-		initParams = {
-			facets: normalize?.facets,
-			sort: normalize?.sort,
-			query: normalize?.query,
-			route: 'ProductCatalog',
-			title
-		}
+		initParams = { facets: normalize?.facets, sort: normalize?.sort, route: 'ProductCatalog', title }
 	} else {
 		initParams = { facets: [{ key: type, value: facets }], route: 'ProductCatalog', title }
 	}
