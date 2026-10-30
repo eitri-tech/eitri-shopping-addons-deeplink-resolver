@@ -154,6 +154,9 @@ Onde:
 `slug`: é o slug do Eitri-app de seu app para qual deseja direcionar o usuário
 `params`: são os [parâmetros de inicialização](https://cdn.83io.com.br/library/eitri-bifrost/doc/latest/classes/Bifrost.html#getInitializationInfos) que deseja enviar ao Eitri-app quando ele for chamado 
 
+> [!NOTE]
+> Quando `route` for `ProductCatalog` e `facets` (e opcionalmente `sort` e `query`) estiverem direto em `params`, o resolver os move para `params` dos parâmetros de inicialização, que é onde a home lê os filtros. Entradas que já usam `params.params.facets` continuam funcionando.
+
 ### Criando seu próprio Deeplink Resolver
 
 Caso as personalizações não atendam suas necessidades, é possível tambem criar seu próprio Eitri-app de tratamento de deeplinks para manipular completamente o código uilizado.
