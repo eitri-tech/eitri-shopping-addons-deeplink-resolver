@@ -123,6 +123,21 @@ const buildCategoryFacets = value =>
 		.filter(Boolean)
 		.map((category, index) => ({ key: `category-${index + 1}`, value: category }))
 
+const resolveRoute = async value => {
+	try {
+		const initParams = typeof value === 'string' ? JSON.parse(value) : value
+		if (!initParams?.route) return false
+
+		const slug = initParams?.slug || 'home'
+
+		await eitriNavigationOpen({ slug, initParams, replace: true })
+	} catch {
+		return false
+	}
+
+	return true
+}
+		
 export const executeCmsAction = async action => {
 	const { type, value } = action || {}
 
@@ -169,6 +184,8 @@ export const executeCmsAction = async action => {
 		case 'orders':
 			await openEitriApp('account', { route: 'OrderList' })
 			return true
+		case 'route':
+			return await resolveRoute(value)
 		default:
 			console.error(`Unknown CMS deeplink action type: ${type}`)
 			return false
