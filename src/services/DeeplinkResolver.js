@@ -161,6 +161,34 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 	}
 }
 
+// Coleção identificada pela query string (ex: https://www.loja.com.br/all?productclusterids=209&sort=release_desc).
+// O caminho da URL é o slug da coleção e não existe como categoria, então quem define a coleção é o productclusterids.
+export const resolveDeeplinkToCollection = deeplink => {
+	console.log('resolveDeeplinkToCollection')
+	try {
+		const [, queryString] = deeplink?.split('?') || []
+		if (!queryString) return false
+
+		const params = new URLSearchParams(queryString.split('#')[0])
+
+		let collectionId = null
+		let sort = ''
+		for (const [key, value] of params.entries()) {
+			const lowerKey = key.toLowerCase()
+			if (lowerKey === 'productclusterids') collectionId = value.trim()
+			if (lowerKey === 'sort') sort = value
+		}
+
+		if (!/^\d+$/.test(collectionId || '')) return false
+
+		openHome({ deeplinkFacets: [{ key: 'productClusterIds', value: collectionId }], sort })
+		return true
+	} catch (error) {
+		console.error('Erro ao processar o deep link de coleção', error)
+		return false
+	}
+}
+
 const resolveStoreLinks = deeplink => {
 	console.log('resolveStoreLinks')
 	if (deeplink.includes('play.google') || deeplink.includes('app.apple')) {
@@ -248,6 +276,7 @@ export const resolveDeeplinkPath = async deeplink => {
 		resolveDeeplinkToProduct,
 		resolveDeeplinkFromCms,
 		resolveDeeplinkFromRemoteConfig,
+		resolveDeeplinkToCollection,
 		resolveDeeplinkLandingPage,
 		resolveDeeplinkToProductCatalog,
 		openRedirectLinkBrowser
