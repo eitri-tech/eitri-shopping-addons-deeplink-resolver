@@ -163,6 +163,11 @@ const resolveDeeplinkToProductCatalog = deeplink => {
 
 // Coleção identificada pela query string (ex: https://www.loja.com.br/all?productclusterids=209&sort=release_desc).
 // O caminho da URL é o slug da coleção e não existe como categoria, então quem define a coleção é o productclusterids.
+// Os demais filtros da listagem seguem o padrão do FastStore: "facets" lista as chaves da query que são filtros
+// (ex: facets=productclusterids,brand,fuzzy,operator) e cada chave traz seus valores (brand=x&brand=y).
+// fuzzy e operator são parâmetros da busca, não filtros.
+const SEARCH_ONLY_PARAMS = ['fuzzy', 'operator']
+
 export const resolveDeeplinkToCollection = deeplink => {
 	console.log('resolveDeeplinkToCollection')
 	try {
@@ -171,17 +176,24 @@ export const resolveDeeplinkToCollection = deeplink => {
 
 		const params = new URLSearchParams(queryString.split('#')[0])
 
-		let collectionId = null
+		const facets = []
 		let sort = ''
 		for (const [key, value] of params.entries()) {
-			const lowerKey = key.toLowerCase()
-			if (lowerKey === 'productclusterids') collectionId = value.trim()
-			if (lowerKey === 'sort') sort = value
+			if (key.toLowerCase() === 'productclusterids' && /^\d+$/.test(value.trim())) {
+				facets.push({ key: 'productClusterIds', value: value.trim() })
+			}
+			if (key.toLowerCase() === 'sort') sort = value
 		}
 
-		if (!/^\d+$/.test(collectionId || '')) return false
+		if (!facets.length) return false
 
-		openHome({ deeplinkFacets: [{ key: 'productClusterIds', value: collectionId }], sort })
+		const facetKeys = (params.get('facets') || '').split(',').map(key => key.trim())
+		for (const key of facetKeys) {
+			if (!key || key.toLowerCase() === 'productclusterids' || SEARCH_ONLY_PARAMS.includes(key.toLowerCase())) continue
+			params.getAll(key).forEach(value => value.trim() && facets.push({ key, value: value.trim() }))
+		}
+
+		openHome({ deeplinkFacets: facets, sort })
 		return true
 	} catch (error) {
 		console.error('Erro ao processar o deep link de coleção', error)
