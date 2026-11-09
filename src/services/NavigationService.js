@@ -175,6 +175,25 @@ export const normalizePath = path => {
 	return normalizedData
 }
 
+/**
+ * A home lê os filtros do catálogo em location.state.params. Entradas do deeplinkMap e
+ * notificações enviam facets/sort/query no primeiro nível dos initParams, então a lista
+ * de produtos nunca era montada. Move esses campos para params; qualquer outro destino,
+ * ou initParams que já tenham params, seguem como estão.
+ */
+export const normalizeProductCatalogParams = initParams => {
+	if (initParams?.route !== 'ProductCatalog' || initParams.params || !Array.isArray(initParams.facets)) {
+		return initParams
+	}
+
+	const { facets, sort, query, ...rest } = initParams
+	const params = { facets }
+	if (sort) params.sort = sort
+	if (query) params.query = query
+
+	return { ...rest, params }
+}
+
 export const navigateHome = async (facets, title, type) => {
 	let initParams
 
@@ -188,7 +207,7 @@ export const navigateHome = async (facets, title, type) => {
 	try {
 		await eitriNavigationOpen({
 			slug: 'home',
-			initParams: initParams,
+			initParams: normalizeProductCatalogParams(initParams),
 			replace: true
 		})
 	} catch (e) {
@@ -228,7 +247,7 @@ export const openEitriApp = async (slug, params) => {
 	try {
 		await eitriNavigationOpen({
 			slug,
-			initParams: params,
+			initParams: normalizeProductCatalogParams(params),
 			replace: true
 		})
 	} catch (e) {
