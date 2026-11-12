@@ -69,6 +69,26 @@ const isWithinValidDateRange = (startDateStr, endDateStr, now) => {
 	return true
 }
 
+const splitPathAndQuery = value => {
+	const raw = String(value ?? '')
+	const index = raw.indexOf('?')
+	if (index === -1) return { path: raw, query: '' }
+	return { path: raw.slice(0, index), query: raw.slice(index + 1) }
+}
+
+const parseQueryString = query => {
+	const params = {}
+	if (!query) return params
+	try {
+		for (const [key, value] of new URLSearchParams(query).entries()) {
+			params[key] = value
+		}
+	} catch (e) {
+		console.error('Erro ao parsear query string do deeplink do CMS', e)
+	}
+	return params
+}
+
 const getRemoteConfig = async key => {
 	try {
 		const result = await Eitri.exposedApis.remoteConfig.getString({ key })
@@ -93,15 +113,38 @@ const filterByRemoteConfig = async deeplinks => {
 	return deeplinks.filter(section => !section.data?.remoteConfigKey || enabled[section.data.remoteConfigKey])
 }
 
-export const resolveDeeplinkFromCms = async deeplink => {
+export const resolveDeeplinkFromCms = async (deeplink, queryParams) => {
 	console.log('resolveDeeplinkFromCms')
 	if (!deeplink) return false
 
 	const deeplinks = await getCmsDeeplinks()
-	const matched = deeplinks.find(section => getPathTerms(section.data.path).some(term => deeplink.indexOf(term) > -1))
+
+	let matched = null
+	let matchedTerm = null
+
+	for (const section of deeplinks) {
+		const term = getPathTerms(section.data.path).find(term => {
+			const { path } = splitPathAndQuery(term)
+			return path && deeplink.indexOf(path) > -1
+		})
+
+		if (term) {
+			matched = section
+			matchedTerm = term
+			break
+		}
+	}
+
 	if (!matched) return false
 
-	return executeCmsAction(matched.data.action)
+	const initParams = {
+		...parseQueryString(splitPathAndQuery(matchedTerm).query),
+		...parseQueryString(splitPathAndQuery(deeplink).query),
+		...(queryParams || {})
+	}
+	if (matched.data.remoteConfigKey) initParams.remoteConfigKey = matched.data.remoteConfigKey
+
+	return executeCmsAction(matched.data.action, initParams)
 }
 
 // Equivalente ao processActions (ResolveCmsActions) da home, abrindo o Eitri-app de destino
@@ -115,22 +158,22 @@ const openHomeRoute = async initParams => {
 	}
 }
 
-const openProductCatalog = (params, action) =>
-	openHomeRoute({ route: 'ProductCatalog', params, title: action?.title || '' })
+const openProductCatalog = (params, action, initParams = {}) =>
+	openHomeRoute({ ...initParams, route: 'ProductCatalog', params, title: action?.title || '' })
 
 const buildCategoryFacets = value =>
 	(value?.split('/') || [])
 		.filter(Boolean)
 		.map((category, index) => ({ key: `category-${index + 1}`, value: category }))
 
-const resolveRoute = async value => {
+const resolveRoute = async (value, initParams = {}) => {
 	try {
-		const initParams = typeof value === 'string' ? JSON.parse(value) : value
-		if (!initParams?.route) return false
+		const parsed = typeof value === 'string' ? JSON.parse(value) : value
+		if (!parsed?.route) return false
 
-		const slug = initParams?.slug || 'home'
+		const slug = parsed?.slug || 'home'
 
-		await eitriNavigationOpen({ slug, initParams, replace: true })
+		await eitriNavigationOpen({ slug, initParams: { ...initParams, ...parsed }, replace: true })
 	} catch {
 		return false
 	}
@@ -138,21 +181,21 @@ const resolveRoute = async value => {
 	return true
 }
 		
-export const executeCmsAction = async action => {
+export const executeCmsAction = async (action, initParams = {}) => {
 	const { type, value } = action || {}
 
 	switch (type) {
 		case 'search':
-			await openHomeRoute({ route: 'Search', searchTerm: value })
+			await openHomeRoute({ ...initParams, route: 'Search', searchTerm: value })
 			return true
 		case 'collection':
-			await openProductCatalog({ facets: [{ key: 'productClusterIds', value }], sort: action?.sort || '' }, action)
+			await openProductCatalog({ facets: [{ key: 'productClusterIds', value }], sort: action?.sort || '' }, action, initParams)
 			return true
 		case 'page':
 			await openLandingPage(action?.title || '', value)
 			return true
 		case 'category':
-			await openProductCatalog({ facets: buildCategoryFacets(value), sort: action?.sort || '' }, action)
+			await openProductCatalog({ facets: buildCategoryFacets(value), sort: action?.sort || '' }, action, initParams)
 			return true
 		case 'product':
 			if (/^\d+$/.test(value)) {
@@ -162,30 +205,30 @@ export const executeCmsAction = async action => {
 			}
 			return true
 		case 'path':
-			await openProductCatalog(normalizePath(value), action)
+			await openProductCatalog(normalizePath(value), action, initParams)
 			return true
 		case 'brand':
-			await openProductCatalog({ facets: [{ key: 'brand', value }], sort: action?.sort || '' }, action)
+			await openProductCatalog({ facets: [{ key: 'brand', value }], sort: action?.sort || '' }, action, initParams)
 			return true
 		case 'link':
 			// mesmo comportamento do forceWeb com URL no deeplinkMap do remote config
 			await openWebFlow(value)
 			return true
 		case 'cart':
-			await openEitriApp('cart')
+			await openEitriApp('cart', { ...initParams })
 			return true
 		case 'account':
 			// com value, abre a view do account de mesmo nome (ex: AboutUs); sem value, abre a home do account
-			await openEitriApp('account', value?.trim() ? { route: value.trim() } : undefined)
+			await openEitriApp('account', value?.trim() ? { ...initParams, route: value.trim() } : { ...initParams })
 			return true
 		case 'wishlist':
-			await openEitriApp('account', { route: 'Wishlist' })
+			await openEitriApp('account', { ...initParams, route: 'Wishlist' })
 			return true
 		case 'orders':
-			await openEitriApp('account', { route: 'OrderList' })
+			await openEitriApp('account', { ...initParams, route: 'OrderList' })
 			return true
 		case 'route':
-			return await resolveRoute(value)
+			return await resolveRoute(value, initParams)
 		default:
 			console.error(`Unknown CMS deeplink action type: ${type}`)
 			return false
