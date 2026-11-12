@@ -4,7 +4,7 @@ module.exports = {
   "slug": "eitri-shopping-addons-deeplink-resolver",
   "eitri-luminus": "2.3.4",
   "eitri-bifrost": "3.10.0",
-  "version": "1.4.4",
+  "version": "1.5.1",
   "versionMessage": "Ajuste para Rotas no CMS de deeplink vtex com parametros",
   "public-key": "d8c934ab-9883-4e20-b25d-0eb95d103aaa",
   "applicationId": "5e5c15f7-65cc-4c57-96b0-cbd55ddcbc5b",
