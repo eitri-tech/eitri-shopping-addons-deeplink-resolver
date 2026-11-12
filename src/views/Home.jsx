@@ -27,7 +27,6 @@ export default function Home(props) {
 	const resolveContent = async () => {
 		try {
 			const startParams = await Eitri.getInitializationInfos()
-
 			if (!startParams) {
 				closeEitriApp()
 				return
@@ -65,8 +64,19 @@ export default function Home(props) {
 
 	const processStartParams = async startParams => {
 		try {
-			const { action, value, title, deeplink } = startParams
+			const { action, value, title } = startParams
+			let { deeplink } = startParams
 			if (deeplink) {
+				const queryIndex = deeplink.indexOf('?')
+				if (queryIndex > -1) {
+					try {
+						const adjFallback = new URLSearchParams(deeplink.slice(queryIndex + 1)).get('adj_fallback')
+						if (adjFallback) deeplink = adjFallback
+					} catch (e) {
+						console.error('Erro ao ler adj_fallback do deeplink', e)
+					}
+				}
+
 				if (deeplink.startsWith('http') || deeplink.startsWith('www')) {
 					await resolveDeeplinkStartParams(deeplink)
 					return
