@@ -137,10 +137,17 @@ export const resolveDeeplinkFromCms = async (deeplink, queryParams) => {
 
 	if (!matched) return false
 
+	const normalizedQueryParams =
+		typeof queryParams === 'string'
+			? parseQueryString(queryParams)
+			: queryParams && typeof queryParams === 'object'
+				? queryParams
+				: {}
+
 	const initParams = {
 		...parseQueryString(splitPathAndQuery(matchedTerm).query),
 		...parseQueryString(splitPathAndQuery(deeplink).query),
-		...(queryParams || {})
+		...normalizedQueryParams
 	}
 	if (matched.data.remoteConfigKey) initParams.remoteConfigKey = matched.data.remoteConfigKey
 
