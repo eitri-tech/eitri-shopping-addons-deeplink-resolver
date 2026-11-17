@@ -47,21 +47,19 @@ Inclua em qualquer parte da raiz do JSON a entrada `awin` para ativar o suporte:
 ```json
     "awin": {
         "enabled": true,
-        "merchantId": "70965",
-        "clearAfterConversion": false
+        "merchantId": "70965"
     }
 ```
 
-| Campo                  | Tipo               | Descrição                                                                                                                                                               |
-| ---------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`              | boolean            | Liga a captura do `awc`. Sem esta flag o parâmetro é ignorado e o link se comporta como qualquer outro.                                                                     |
-| `merchantId`           | string             | Id do advertiser na Awin, usado pelo app ao registrar a conversão.                                                                                                        |
-| `clearAfterConversion` | boolean (opcional) | `false` ou ausente: o `awc` vale durante toda a janela das UTMs. `true`: o app descarta o `awc` logo após registrar a conversão, limitando a uma conversão por clique. |
+| Campo        | Tipo    | Descrição                                                                                              |
+| ------------ | ------- | -------------------------------------------------------------------------------------------------------- |
+| `enabled`    | boolean | Liga a captura do `awc` e o registro da conversão. Sem esta flag o parâmetro é ignorado e o link se comporta como qualquer outro. |
+| `merchantId` | string  | Id do advertiser na Awin, usado ao registrar a conversão.                                                 |
 
-Com a flag ligada, o resolver grava o `awc` como **`utm_awc`** junto dos demais parâmetros UTM (`Vtex.customer.saveUtmParams`). Isso é proposital: o `awc` passa a ter exatamente o mesmo ciclo de vida das UTMs — expira junto (30 dias por padrão, veja `appConfigs.utmExpirationTimeInMinutes`) e é descartado assim que o usuário entra por outro link com UTMs. Assim uma compra só é atribuída à Awin enquanto aquele clique for, de fato, a última origem do usuário.
+Com a flag ligada, o resolver guarda o `awc` **na sessão** (`Awin.saveClickId` do `eitri-shopping-vtex-shared`), junto do `session_id` da abertura corrente do app. O clique vale só enquanto essa sessão durar: fechar e reabrir o app descarta o `awc`, e a compra deixa de ser atribuída à Awin. As UTMs do mesmo link continuam seguindo o caminho normal, com a janela de 30 dias delas.
 
 > [!NOTE]
-> O resolver apenas guarda o `awc` na sessão. Quem registra a conversão na Awin é o Eitri-app de checkout da sua aplicação, lendo `utm_awc` de `Vtex.customer.getUtmParams()` e o `merchantId` desta mesma configuração.
+> O resolver só guarda o clique. Quem registra a conversão na Awin é o próprio `eitri-shopping-vtex-shared`, no fim do pagamento — o Eitri-app de checkout da sua aplicação não precisa de código nenhum, só da versão do shared que tem a integração.
 
 ### Personalizando deeplinks para seu app
 

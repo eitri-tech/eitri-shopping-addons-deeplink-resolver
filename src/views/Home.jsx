@@ -1,5 +1,5 @@
 import Eitri from 'eitri-bifrost'
-import { App, Vtex } from 'eitri-shopping-vtex-shared'
+import { App, Awin, Vtex } from 'eitri-shopping-vtex-shared'
 import { deeplinkActionsExecutor } from '../services/NotificationDeepLinkService'
 import { resolveDeeplinkPath } from '../services/DeeplinkResolver'
 import { resolveUriDeeplinkScheme } from '../services/UriDeeplinkSchemeResolver'
@@ -143,21 +143,11 @@ export default function Home(props) {
 
 		// os parametros da Awin são passados juntos com os parametros UTM, mas não seguem o padrão UTM, então precisamos tratar eles separadamente
 		const awinParam = paramsArray?.find(k => k.startsWith('awc='))
-		if (awinParam && (await isAwinEnabled())) {
-			paramsObject.utm_awc = awinParam.split('=')[1]
+		if (awinParam) {
+			await Awin.saveClickId(awinParam.split('=')[1], paramsObject.utm_source)
 		}
 
 		await saveUtmParams(paramsObject)
-	}
-
-	const isAwinEnabled = async () => {
-		try {
-			const remoteConfig = await Eitri.environment.getRemoteConfigs()
-			return remoteConfig?.awin?.enabled === true
-		} catch (e) {
-			console.error('Erro ao ler a configuração da Awin', e)
-			return false
-		}
 	}
 
 	const saveUtmParams = async params => {
