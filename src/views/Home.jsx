@@ -141,13 +141,23 @@ export default function Home(props) {
 			}
 		})
 
-		const awinParam = paramsArray?.find(k => k.startsWith("awc="))
-		if (awinParam) {
-			const awc = awinParam.split('=')[1]
-			paramsObject.utm_campaign = awc
+		// os parametros da Awin são passados juntos com os parametros UTM, mas não seguem o padrão UTM, então precisamos tratar eles separadamente
+		const awinParam = paramsArray?.find(k => k.startsWith('awc='))
+		if (awinParam && (await isAwinEnabled())) {
+			paramsObject.utm_awc = awinParam.split('=')[1]
 		}
 
 		await saveUtmParams(paramsObject)
+	}
+
+	const isAwinEnabled = async () => {
+		try {
+			const remoteConfig = await Eitri.environment.getRemoteConfigs()
+			return remoteConfig?.awin?.enabled === true
+		} catch (e) {
+			console.error('Erro ao ler a configuração da Awin', e)
+			return false
+		}
 	}
 
 	const saveUtmParams = async params => {

@@ -38,6 +38,31 @@ Esta entrada define qual será o Eitri-app responsável por processar seus deepl
     }
 ```
 
+#### awin
+
+A Awin identifica o clique no link do afiliado pelo parâmetro `awc` da URL (ex.: `https://sualoja.com.br/mulher?utm_source=awin&awc=70965_1794922847_71782e...`).
+
+Inclua em qualquer parte da raiz do JSON a entrada `awin` para ativar o suporte:
+
+```json
+    "awin": {
+        "enabled": true,
+        "merchantId": "70965",
+        "clearAfterConversion": false
+    }
+```
+
+| Campo                  | Tipo               | Descrição                                                                                                                                                               |
+| ---------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`              | boolean            | Liga a captura do `awc`. Sem esta flag o parâmetro é ignorado e o link se comporta como qualquer outro.                                                                     |
+| `merchantId`           | string             | Id do advertiser na Awin, usado pelo app ao registrar a conversão.                                                                                                        |
+| `clearAfterConversion` | boolean (opcional) | `false` ou ausente: o `awc` vale durante toda a janela das UTMs. `true`: o app descarta o `awc` logo após registrar a conversão, limitando a uma conversão por clique. |
+
+Com a flag ligada, o resolver grava o `awc` como **`utm_awc`** junto dos demais parâmetros UTM (`Vtex.customer.saveUtmParams`). Isso é proposital: o `awc` passa a ter exatamente o mesmo ciclo de vida das UTMs — expira junto (30 dias por padrão, veja `appConfigs.utmExpirationTimeInMinutes`) e é descartado assim que o usuário entra por outro link com UTMs. Assim uma compra só é atribuída à Awin enquanto aquele clique for, de fato, a última origem do usuário.
+
+> [!NOTE]
+> O resolver apenas guarda o `awc` na sessão. Quem registra a conversão na Awin é o Eitri-app de checkout da sua aplicação, lendo `utm_awc` de `Vtex.customer.getUtmParams()` e o `merchantId` desta mesma configuração.
+
 ### Personalizando deeplinks para seu app
 
 Alem dos deeplinks padrão, você pode definir deeplinks customizados para seu App para expandir ainda mais as possibilidades de tratamento e abertura de páginas do seu aplicativo. Para isso existem 2 métodos:
