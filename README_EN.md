@@ -56,7 +56,7 @@ Include the `awin` entry anywhere in the root of the JSON to enable support:
 | `enabled`    | boolean | Enables `awc` capture and conversion reporting. Without this flag the parameter is ignored and the link behaves like any other. |
 | `merchantId` | string  | Your Awin advertiser id, used when reporting the conversion.                                      |
 
-With the flag on, the resolver stores the `awc` **in the session** (`Awin.saveClickId`, from `eitri-shopping-vtex-shared`), alongside the `session_id` of the current app launch. The click only lasts for that session: closing and reopening the app drops the `awc`, and the purchase is no longer attributed to Awin. UTM parameters from the same link keep their usual 30-day window.
+With the flag on, the resolver stores the `awc` **in the session** (`Awin.saveClickId`, from `eitri-shopping-vtex-shared`), alongside the `session_id` of the current app launch. The click only lasts for that session: closing and reopening the app drops the `awc`, and the purchase is no longer attributed to Awin. The `awc` is read and stored on its own, **with no tie to the UTM parameters**: a link carrying only `awc` is captured just the same, no UTM is created or changed because of it, and UTMs from the same link keep their usual 30-day window.
 
 > [!NOTE]
 > The resolver only stores the click. Reporting the conversion to Awin is done by `eitri-shopping-vtex-shared` itself, at the end of the payment — your application's checkout Eitri-app needs no code at all, just a version of the shared app that ships the integration.
