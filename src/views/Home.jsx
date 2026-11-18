@@ -147,7 +147,7 @@ export default function Home(props) {
 		await saveUtmParams(paramsObject)
 	}
 
-	// o awc da Awin não tem nada a ver com as UTMs: é lido do link por conta própria e guardado na sessão pelo shared
+	// o awc da Awin não tem nada a ver com as UTMs: é lido do link por conta própria e guardado pelo shared, valendo pelas horas de awin.expirationTime
 	const resolveAwinClick = async queryParams => {
 		if (!queryParams) return
 		try {

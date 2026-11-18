@@ -47,7 +47,8 @@ Inclua em qualquer parte da raiz do JSON a entrada `awin` para ativar o suporte:
 ```json
     "awin": {
         "enabled": true,
-        "merchantId": "70965"
+        "merchantId": "70965",
+        "expirationTime": "6"
     }
 ```
 
@@ -55,8 +56,9 @@ Inclua em qualquer parte da raiz do JSON a entrada `awin` para ativar o suporte:
 | ------------ | ------- | -------------------------------------------------------------------------------------------------------- |
 | `enabled`    | boolean | Liga a captura do `awc` e o registro da conversão. Sem esta flag o parâmetro é ignorado e o link se comporta como qualquer outro. |
 | `merchantId` | string  | Id do advertiser na Awin, usado ao registrar a conversão.                                                 |
+| `expirationTime` | string | Quantas horas o `awc` fica ativo e conta na compra, a partir do clique (ex.: `"6"`). Ausente ou inválido, vale 6 horas. |
 
-Com a flag ligada, o resolver guarda o `awc` **na sessão** (`Awin.saveClickId` do `eitri-shopping-vtex-shared`), junto do `session_id` da abertura corrente do app. O clique vale só enquanto essa sessão durar: fechar e reabrir o app descarta o `awc`, e a compra deixa de ser atribuída à Awin. O `awc` é lido e guardado por conta própria, **sem nenhum vínculo com as UTMs**: um link só com `awc` é capturado do mesmo jeito, nenhuma UTM é criada ou alterada por causa dele, e as UTMs do mesmo link seguem o caminho normal, com a janela de 30 dias delas.
+Com a flag ligada, o resolver guarda o `awc` (`Awin.saveClickId` do `eitri-shopping-vtex-shared`) junto do horário do clique. O clique conta para a compra durante as horas definidas em `expirationTime`, mesmo que o app seja fechado e reaberto nesse intervalo. Depois disso ele é descartado e a compra deixa de ser atribuída à Awin. Um clique novo substitui o anterior e reinicia a contagem. O `awc` é lido e guardado por conta própria, **sem nenhum vínculo com as UTMs**: um link só com `awc` é capturado do mesmo jeito, nenhuma UTM é criada ou alterada por causa dele, e as UTMs do mesmo link seguem o caminho normal, com a janela de 30 dias delas.
 
 > [!NOTE]
 > O resolver só guarda o clique. Quem registra a conversão na Awin é o próprio `eitri-shopping-vtex-shared`, no fim do pagamento — o Eitri-app de checkout da sua aplicação não precisa de código nenhum, só da versão do shared que tem a integração.
