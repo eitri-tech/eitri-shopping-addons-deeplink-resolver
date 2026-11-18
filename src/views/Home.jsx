@@ -1,5 +1,5 @@
 import Eitri from 'eitri-bifrost'
-import { App, Vtex } from 'eitri-shopping-vtex-shared'
+import { App, Awin, Vtex } from 'eitri-shopping-vtex-shared'
 import { deeplinkActionsExecutor } from '../services/NotificationDeepLinkService'
 import { resolveDeeplinkPath } from '../services/DeeplinkResolver'
 import { resolveUriDeeplinkScheme } from '../services/UriDeeplinkSchemeResolver'
@@ -84,6 +84,7 @@ export default function Home(props) {
 					const queryParams = deeplink.split('?')[1]
 					if (queryParams) {
 						await resolveUtmParams(queryParams)
+						await resolveAwinClick(queryParams)
 					}
 					await resolveUriDeeplinkScheme(deeplink)
 					return
@@ -127,6 +128,8 @@ export default function Home(props) {
 			console.error('Erro ao salvar os parâmetros UTM', e)
 		}
 
+		await resolveAwinClick(queryParams)
+
 		resolveDeeplinkPath(deeplink)
 	}
 
@@ -141,13 +144,18 @@ export default function Home(props) {
 			}
 		})
 
-		const awinParam = paramsArray?.find(k => k.startsWith("awc="))
-		if (awinParam) {
-			const awc = awinParam.split('=')[1]
-			paramsObject.utm_campaign = awc
-		}
-
 		await saveUtmParams(paramsObject)
+	}
+
+	// o awc da Awin não tem nada a ver com as UTMs: é lido do link por conta própria e guardado pelo shared, valendo pelas horas de awin.expirationTime
+	const resolveAwinClick = async queryParams => {
+		if (!queryParams) return
+		try {
+			const awc = new URLSearchParams(queryParams).get('awc')
+			if (awc) await Awin.saveClickId(awc)
+		} catch (e) {
+			console.error('Erro ao ler o awc da Awin', e)
+		}
 	}
 
 	const saveUtmParams = async params => {
