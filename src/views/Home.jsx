@@ -147,12 +147,13 @@ export default function Home(props) {
 		await saveUtmParams(paramsObject)
 	}
 
-	// o awc da Awin não tem nada a ver com as UTMs: é lido do link por conta própria e guardado pelo shared, valendo pelas horas de awin.expirationTime
+	// o awc da Awin é lido do link por conta própria e guardado pelo shared, valendo pelas horas de awin.expirationTime; o utm_source vai junto só como canal da conversão (ch), sem mexer nas UTMs em si
 	const resolveAwinClick = async queryParams => {
 		if (!queryParams) return
 		try {
-			const awc = new URLSearchParams(queryParams).get('awc')
-			if (awc) await Awin.saveClickId(awc)
+			const params = new URLSearchParams(queryParams)
+			const awc = params.get('awc')
+			if (awc) await Awin.saveClickId(awc, params.get('utm_source'))
 		} catch (e) {
 			console.error('Erro ao ler o awc da Awin', e)
 		}
