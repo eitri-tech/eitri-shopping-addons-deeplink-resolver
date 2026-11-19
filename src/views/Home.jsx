@@ -64,8 +64,11 @@ export default function Home(props) {
 
 	const processStartParams = async startParams => {
 		try {
-			const { action, value, title } = startParams
+			const { action, value, title, deeplinkData } = startParams
 			let { deeplink } = startParams
+
+			if (!deeplink && deeplinkData?.deep_link_value) deeplink = `${deeplinkData.deep_link_value}`
+
 			if (deeplink) {
 				const queryIndex = deeplink.indexOf('?')
 				if (queryIndex > -1) {
